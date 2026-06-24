@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LEZGAMEZ — Zombies, eggs, weird and death</title>
+  <style>
+    :root {
+      --bg: #050607;
+      --panel: #101217;
+      --panel-2: #161922;
+      --line: #3bff00;
+      --cyan: #00f5ff;
+      --magenta: #ff2bd6;
+      --yellow: #ffe600;
+      --green: #85ff00;
+      --red: #ff365f;
+      --text: #f4fff8;
+      --muted: #9aa4a6;
+      --shadow: 0 0 18px rgba(0,245,255,.28), 0 0 28px rgba(255,43,214,.14);
+      --hard: 3px solid var(--line);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        radial-gradient(circle at 20% 10%, rgba(255,43,214,.15), transparent 30%),
+        radial-gradient(circle at 80% 0%, rgba(0,245,255,.14), transparent 28%),
+        var(--bg);
+      background-size: 38px 38px, 38px 38px, auto, auto, auto;
+      color: var(--text);
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', system-ui, sans-serif;
+      letter-spacing: .03em;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 4px);
+      mix-blend-mode: overlay; opacity: .45;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    .topbar {
+      position: sticky; top: 0; z-index: 50; display: grid;
+      grid-template-columns: auto 1fr minmax(220px, 360px) auto auto auto; gap: 12px; align-items: center;
+      padding: 14px 18px; background: rgba(5,6,7,.92); border-bottom: var(--hard); box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .logo { font-size: clamp(1.4rem, 3vw, 2.4rem); color: var(--green); text-shadow: 3px 0 var(--magenta), -3px 0 var(--cyan), 0 0 16px var(--green); }
+    nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    nav a, .pill { border: 2px solid #364046; padding: 9px 11px; background: #0b0d11; color: var(--cyan); text-transform: uppercase; font-size: .86rem; }
+    nav a:hover, .pill:hover { border-color: var(--magenta); color: var(--yellow); transform: translateY(-1px); }
+    .search { width: 100%; background: #000; border: 2px solid var(--cyan); color: var(--text); padding: 11px; outline: none; box-shadow: 0 0 12px rgba(0,245,255,.22); }
+    .btn { cursor: pointer; border: 3px solid var(--text); color: #050607; background: var(--green); padding: 11px 15px; text-transform: uppercase; box-shadow: 5px 5px 0 var(--magenta); transition: .12s; }
+    .btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 var(--cyan); }
+    .btn.alt { background: var(--cyan); box-shadow: 5px 5px 0 var(--green); }
+    .btn.warn { background: var(--yellow); }
+    .btn.dark { background: #0d1015; color: var(--text); border-color: var(--magenta); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.7); }
+    .notif { position: relative; }
+    .badge { position: absolute; top: -10px; right: -9px; background: var(--red); color: white; border: 2px solid white; padding: 1px 6px; font-size: .75rem; }
+    .profile { display: grid; grid-template-columns: 42px 1fr; gap: 8px; align-items: center; min-width: 140px; }
+    .avatar { display:grid; place-items:center; width:42px; height:42px; background:linear-gradient(135deg,var(--magenta),var(--cyan)); border:2px solid var(--yellow); }
+    .levelbar { height: 8px; border: 1px solid var(--cyan); background:#050607; margin-top:3px; }
+    .levelbar span { display:block; height:100%; width:68%; background:var(--green); }
+    main { max-width: 1500px; margin: 0 auto; padding: 22px; }
+    .hero { border: var(--hard); padding: clamp(24px, 5vw, 56px); background: linear-gradient(135deg, rgba(16,18,23,.94), rgba(4,4,7,.88)); box-shadow: var(--shadow); position:relative; overflow:hidden; }
+    .hero::after { content:"SYSTEM // ARCADE // CHAOS"; position:absolute; right:-25px; top:25px; color:rgba(255,230,0,.12); font-size:4rem; transform:rotate(6deg); }
+    .glitch { font-size: clamp(4rem, 14vw, 11rem); line-height:.82; margin: 0; color: var(--text); text-shadow: 6px 0 var(--magenta), -6px 0 var(--cyan), 0 0 25px var(--green); }
+    .slogan { color: var(--yellow); font-size: clamp(1.2rem, 3vw, 2rem); margin: 12px 0; }
+    .subtitle { font-family: Arial, sans-serif; color: #d9f7ff; font-size: 1.05rem; max-width: 760px; letter-spacing: 0; }
+    .cta, .filters, .shell-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+    .stats { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-top:24px; }
+    .stat, .panel, .card { background: rgba(16,18,23,.94); border: 2px solid #354148; padding: 16px; box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset; }
+    .stat b { display:block; color:var(--green); font-size:1.55rem; }
+    .layout { display:grid; grid-template-columns: minmax(0, 1fr) 380px; gap:18px; margin-top:18px; }
+    section { scroll-margin-top: 100px; }
+    .section-title { color: var(--cyan); font-size: 2rem; text-shadow: 3px 0 var(--magenta); margin: 0 0 14px; }
+    .featured { display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; border-color: var(--magenta); }
+    .game-frame, .thumb, .store-icon, .shell-stage { display:grid; place-items:center; min-height:250px; background: linear-gradient(135deg, #111, #222 48%, #090909 49%); border:3px solid var(--cyan); color:var(--yellow); text-align:center; position:relative; overflow:hidden; }
+    .game-frame::before, .thumb::before, .shell-stage::before { content:""; position:absolute; inset:-50%; background: repeating-conic-gradient(from 0deg, rgba(133,255,0,.15) 0 8deg, transparent 8deg 18deg); animation: spin 16s linear infinite; }
+    .game-frame span, .thumb span, .shell-stage > div { position:relative; z-index:1; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .tags { display:flex; gap:7px; flex-wrap:wrap; margin: 10px 0; }
+    .tag { border:1px solid var(--cyan); color:var(--cyan); padding:4px 7px; background:#050607; font-family:Arial,sans-serif; font-size:.78rem; }
+    .library-tools { display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center; }
+    select { background:#000; color:var(--yellow); border:2px solid var(--yellow); padding:10px; }
+    .games-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:14px; }
+    .card { border-color:#46535b; position:relative; }
+    .card:hover { border-color:var(--green); box-shadow:var(--shadow); }
+    .thumb { min-height:145px; margin-bottom:12px; }
+    .badge-status { display:inline-block; padding:4px 8px; border:2px solid var(--green); color:var(--green); background:#001a08; }
+    .badge-status.SOON { color:var(--yellow); border-color:var(--yellow); background:#1b1700; }
+    .badge-status.TESTING { color:var(--magenta); border-color:var(--magenta); background:#1b0017; }
+    .badge-status.NEW { color:var(--cyan); border-color:var(--cyan); background:#00181b; }
+    .meta { color: var(--muted); font-family: Arial, sans-serif; font-size:.9rem; letter-spacing:0; }
+    .wishlist { position:absolute; top:10px; right:10px; width:42px; height:42px; background:#000; color:var(--magenta); border:2px solid var(--magenta); cursor:pointer; }
+    .wishlist.active { background:var(--magenta); color:#000; }
+    .sidebar { display:flex; flex-direction:column; gap:14px; }
+    .wallet-balance { font-size:2.25rem; color:var(--green); text-shadow:0 0 14px var(--green); }
+    .progress { height:13px; border:1px solid var(--cyan); background:#020203; margin:7px 0; }
+    .progress span { display:block; height:100%; background:linear-gradient(90deg,var(--green),var(--cyan)); }
+    .dots { display:flex; gap:8px; } .dot { width:22px;height:22px;border:2px solid var(--cyan);background:#020203; } .dot.done { background:var(--green); box-shadow:0 0 10px var(--green); }
+    .leader-row, .reward-row, .quest, .store-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; border-top:1px solid #354148; padding:10px 0; }
+    .you { color:var(--yellow); background:rgba(255,230,0,.08); }
+    .store-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap:12px; }
+    .store-icon { min-height:95px; font-size:2rem; }
+    footer { margin-top:24px; border-top:var(--hard); padding:28px 22px; background:#07080a; display:grid; grid-template-columns: 1.4fr repeat(3,1fr) 1.4fr; gap:18px; }
+    footer ul { list-style:none; padding:0; margin:8px 0 0; color:var(--muted); font-family:Arial,sans-serif; }
+    footer li { margin:7px 0; }
+    .modal { display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.82); padding:20px; overflow:auto; }
+    .modal.open { display:grid; place-items:center; }
+    .modal-box { width:min(1100px, 96vw); background:#0b0d11; border:3px solid var(--green); box-shadow:var(--shadow); padding:18px; max-height:92vh; overflow:auto; }
+    .shell-stage { min-height: min(56vh, 560px); margin:14px 0; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing:0; }
+    pre { background:#000; color:#9dffb5; border:1px solid #354148; padding:12px; white-space:pre-wrap; }
+    .packages { display:grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+    .toastbox { position:fixed; right:18px; bottom:18px; z-index:150; display:flex; flex-direction:column; gap:8px; }
+    .toast { background:#050607; border:2px solid var(--cyan); color:var(--text); padding:12px 14px; box-shadow:var(--shadow); }
+    @media (max-width: 1050px) { .topbar { grid-template-columns:1fr auto; } nav, .topbar .search, .profile { grid-column:1/-1; } .layout, .featured { grid-template-columns:1fr; } footer { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 650px) { main { padding:12px; } .stats { grid-template-columns:1fr 1fr; } .library-tools { grid-template-columns:1fr; } .btn { width:100%; } footer { grid-template-columns:1fr; } .topbar { padding:10px; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="#home" class="logo">LEZGAMEZ</a>
+    <nav><a href="#home">Home</a><a href="#games">Games</a><a href="#rankings">Rankings</a><a href="#store">Store</a><a href="#wallet">Wallet</a><a href="#quests">Daily Quests</a></nav>
+    <input id="globalSearch" class="search" type="search" placeholder="Search games and players... press /" />
+    <button class="btn dark notif" id="notifyBtn">Alerts <span class="badge">3</span></button>
+    <div class="profile"><div class="avatar">☠</div><div><b>LEZ_MASTER</b><div class="meta">LVL 12</div><div class="levelbar"><span></span></div></div></div>
+    <button class="btn" id="topPlayBtn">Play Now</button>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <h1 class="glitch">LEZGAMEZ</h1>
+      <div class="slogan">Zombies, eggs, weird and death</div>
+      <p class="subtitle">A weird arcade universe where every run creates coins, chaos, quests, and rankings.</p>
+      <div class="cta"><button class="btn" id="startPlaying">Start Playing</button><a class="btn alt" href="#games">Browse Games</a><button class="btn warn buyCoinsOpen">Get Coins</button></div>
+      <div class="stats"><div class="stat"><b id="statOnline">0</b>Players online</div><div class="stat"><b>9,884,120</b>Games played</div><div class="stat"><b>284,900</b>Coins earned today</div><div class="stat"><b>99.98%</b>Uptime</div></div>
+    </section>
+
+    <div class="layout">
+      <div>
+        <section class="panel featured" id="featured">
+          <div class="game-frame"><span>Featured Game Slot<br><strong>Isolated future game mount</strong></span></div>
+          <div><h2 class="section-title">Golden Rain Zombies</h2><div class="tags"><span class="tag">Survival</span><span class="tag">Arcade</span><span class="tag">Weird</span></div><p class="meta">Survive with your umbrella while toxic golden rain turns the city into a zombie horde.</p><h3>Top Reward: <span class="wallet-balance">750 LC</span></h3><div class="cta"><button class="btn" data-play-featured>Play Now</button><button class="btn dark" data-details-featured>View Details</button></div></div>
+        </section>
+
+        <section id="games" class="panel" style="margin-top:18px">
+          <h2 class="section-title">Game Library</h2>
+          <div class="library-tools"><div class="filters" id="filters"></div><select id="sortSelect" aria-label="Sort games"><option value="popular">Popular</option><option value="reward">Reward</option><option value="name">Name</option><option value="newest">Newest</option></select></div>
+          <div class="games-grid" id="gamesGrid" style="margin-top:14px"></div>
+        </section>
+
+        <section id="store" class="panel" style="margin-top:18px"><h2 class="section-title">Store Preview</h2><div class="store-grid" id="storeGrid"></div></section>
+      </div>
+
+      <aside class="sidebar">
+        <section class="panel" id="wallet"><h2 class="section-title">Your Wallet</h2><div class="wallet-balance"><span id="walletBalance">0</span> LC</div><p class="meta">≈ $<span id="walletUsd">0.00</span> internal game value only. Not money.</p><div class="cta"><button class="btn buyCoinsOpen">Buy Coins</button><button class="btn dark" id="sendBtn">Send</button></div><h3>Recent Rewards</h3><div id="recentRewards"></div></section>
+        <section class="panel"><h2 class="section-title">Daily Streak</h2><div class="wallet-balance"><span id="streakDays">5</span> days</div><div class="dots" id="streakDots"></div><p>Countdown: <b id="countdown">--:--:--</b></p><p class="meta">Next reward: 500 Lez Coins</p></section>
+        <section class="panel" id="quests"><h2 class="section-title">Daily Quests</h2><div id="questsList"></div></section>
+        <section class="panel" id="rankings"><h2 class="section-title">Global Leaderboard</h2><div id="leaderboard"></div></section>
+      </aside>
+    </div>
+  </main>
+
+  <footer><div><div class="logo">LEZGAMEZ</div><p class="meta">Underground arcade OS for original absurd browser games.</p></div><div><b>Platform</b><ul><li>About Us</li><li>Games</li><li>Partners</li></ul></div><div><b>Support</b><ul><li>Help Center</li><li>Terms</li><li>Privacy</li></ul></div><div><b>Community</b><ul><li>Discord</li><li>YouTube</li><li>TikTok</li></ul></div><div><b>Newsletter</b><input id="email" class="search" type="email" placeholder="you@arcade.null"><button class="btn" id="subscribeBtn" style="margin-top:8px">Subscribe</button></div></footer>
+
+  <div class="modal" id="gameModal" role="dialog" aria-modal="true"><div class="modal-box"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 class="section-title" id="shellTitle">Game Shell</h2><button class="btn dark" data-close="gameModal">Close</button></div><div id="shellMeta" class="meta"></div><div class="shell-stage" id="shellStage"></div><div class="shell-actions"><button class="btn dark" id="fullscreenBtn">Fullscreen</button><button class="btn dark" id="restartBtn">Restart placeholder</button><button class="btn warn" id="bugBtn">Report bug</button></div><pre id="shellCode"></pre></div></div>
+  <div class="modal" id="coinModal" role="dialog" aria-modal="true"><div class="modal-box"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 class="section-title">Buy Lez Coins</h2><button class="btn dark" data-close="coinModal">Close</button></div><p class="meta"><b>Disclaimer:</b> Coins are internal platform credits only. They are not withdrawable. They do not represent money. They have no external monetary value. They cannot be transferred outside the platform.</p><p class="meta">Crypto checkout placeholder — not active.</p><div class="packages"><button class="btn" data-package="1000">1,000 Lez Coins</button><button class="btn alt" data-package="3000">3,000 Lez Coins</button><button class="btn warn" data-package="8000">8,000 Lez Coins</button></div></div></div>
+  <div class="toastbox" id="toastbox"></div>
+
+  <script>
+    /*
+      LEZGAMEZ future architecture notes:
+      - Replace the local games array below with: const games = await fetch('/api/games').then(r => r.json()).
+      - Replace walletData with fetch('/api/wallet'), leaderboardData with fetch('/api/leaderboard'), and storeItems with fetch('/api/store').
+      - Reward grants must be validated by /api/rewards on the backend; never trust reward values sent by client JavaScript.
+      - Coin balances must never be controlled only by localStorage/client JS in production; this demo uses localStorage only for simulation.
+      - Game score submissions should be signed, replay-protected, and validated server-side.
+      - Iframes should use restrictive sandbox attributes; game builds should be served from controlled paths like /games/{slug}/index.html or a trusted CDN.
+      - The client should not be trusted for economy logic, purchases, quest completion, or leaderboard scores.
+    */
+    const games = [
+      {id:1,title:'Golden Rain Zombies',slug:'golden-rain-zombies',status:'LIVE',description:'Survive with your umbrella while toxic golden rain turns the city into a zombie horde.',tags:['Survival','Arcade','Weird'],category:'Survival',reward:750,playersOnline:324,thumbnailPlaceholder:'☔🧟',isPlayable:true,gameType:'HTML5',gameUrl:'/games/golden-rain-zombies/index.html',embedMode:'placeholder',version:'1.0.7',releaseDate:'2026-06-01',comingSoon:false},
+      {id:2,title:'Egg Hunt 3000',slug:'egg-hunt-3000',status:'NEW',description:'Sprint through neon farms and steal cyber eggs before the clock explodes.',tags:['Arcade','Weird'],category:'Arcade',reward:420,playersOnline:189,thumbnailPlaceholder:'🥚⚡',isPlayable:true,gameType:'Canvas',gameUrl:'/games/egg-hunt-3000/index.html',embedMode:'canvas',version:'0.9.2',releaseDate:'2026-06-20',comingSoon:false},
+      {id:3,title:'Huevo No Te Quiebres',slug:'huevo-no-te-quiebres',status:'TESTING',description:'Balance a fragile egg hero across death traps, bad jokes, and moving panels.',tags:['Puzzle','Weird'],category:'Puzzle',reward:530,playersOnline:88,thumbnailPlaceholder:'🥚💀',isPlayable:true,gameType:'WebGL',gameUrl:'/games/huevo-no-te-quiebres/index.html',embedMode:'webgl',version:'0.4.1',releaseDate:'2026-05-15',comingSoon:false},
+      {id:4,title:'Gravity Dungeon Dash',slug:'gravity-dungeon-dash',status:'LIVE',description:'Flip gravity in a brutal dungeon built by angry rectangles.',tags:['Arcade','Puzzle'],category:'Arcade',reward:610,playersOnline:264,thumbnailPlaceholder:'🌀🏰',isPlayable:true,gameType:'Iframe',gameUrl:'/games/gravity-dungeon-dash/index.html',embedMode:'iframe',version:'1.2.0',releaseDate:'2026-04-09',comingSoon:false},
+      {id:5,title:'Cell Front',slug:'cell-front',status:'LIVE',description:'Command microscopic squads in fast online cell wars.',tags:['Online','Survival'],category:'Online',reward:900,playersOnline:512,thumbnailPlaceholder:'🧫⚔',isPlayable:true,gameType:'External',gameUrl:'/games/cell-front/index.html',embedMode:'external',version:'1.1.4',releaseDate:'2026-03-22',comingSoon:false},
+      {id:6,title:'Bomb Wars Stickman',slug:'bomb-wars-stickman',status:'SOON',description:'Stickman demolition arena with ridiculous chain reactions.',tags:['Online','Arcade'],category:'Online',reward:1000,playersOnline:0,thumbnailPlaceholder:'💣🏃',isPlayable:false,gameType:'HTML5',gameUrl:'',embedMode:'placeholder',version:'0.1.0',releaseDate:'2026-08-01',comingSoon:true},
+      {id:7,title:'Crazy Panels',slug:'crazy-panels',status:'TESTING',description:'Rearrange cursed panels while the UI fights back.',tags:['Puzzle','Weird'],category:'Puzzle',reward:390,playersOnline:73,thumbnailPlaceholder:'▦🤯',isPlayable:true,gameType:'Canvas',gameUrl:'/games/crazy-panels/index.html',embedMode:'canvas',version:'0.7.8',releaseDate:'2026-02-17',comingSoon:false},
+      {id:8,title:'Crypt Flap',slug:'crypt-flap',status:'NEW',description:'Flap through vampire servers and dodge tombstone popups.',tags:['Arcade','Weird'],category:'Arcade',reward:470,playersOnline:221,thumbnailPlaceholder:'🦇🪦',isPlayable:true,gameType:'HTML5',gameUrl:'/games/crypt-flap/index.html',embedMode:'placeholder',version:'1.0.0',releaseDate:'2026-06-18',comingSoon:false}
+    ];
+    const walletData = { balance: Number(localStorage.getItem('lezCoins') || 12450), rewards:['+750 Golden Rain Zombies','+300 Daily login','+120 Crypt Flap run'] };
+    const quests = [{name:'Play 3 games',current:1,target:3,reward:300},{name:'Earn 1,000 coins',current:420,target:1000,reward:500},{name:'Win 2 multiplayer matches',current:0,target:2,reward:700},{name:'Play a weird game',current:1,target:1,reward:250}];
+    const leaderboardData = [{user:'X_WEIRDKING_X',score:998120},{user:'EGGSLAYER69',score:864010},{user:'Z0MB13_LORD',score:802400},{user:'PUZZLE_GURU',score:755920},{user:'LEZ_MASTER (YOU)',score:733700,you:true}];
+    const storeItems = [{name:'Neon Skull Mask',rarity:'Rare',price:1800,icon:'☠'},{name:'Glitch Umbrella',rarity:'Epic',price:3200,icon:'☂'},{name:'Toxic Backpack',rarity:'Rare',price:2400,icon:'🎒'},{name:'Cyber Egg',rarity:'Legendary',price:8000,icon:'🥚'},{name:'Death Banner',rarity:'Epic',price:4100,icon:'⚑'}];
+    const state = { filter:'All', sort:'popular', search:'', wishlist:new Set(JSON.parse(localStorage.getItem('wishlist')||'[]')) };
+    const $ = s => document.querySelector(s); const $$ = s => document.querySelectorAll(s);
+    function toast(msg, bad=false){ const t=document.createElement('div'); t.className='toast'; t.style.borderColor=bad?'var(--red)':'var(--cyan)'; t.textContent=msg; $('#toastbox').appendChild(t); setTimeout(()=>t.remove(),3200); }
+    function updateWallet(){ $('#walletBalance').textContent=walletData.balance.toLocaleString(); $('#walletUsd').textContent=(walletData.balance/1000).toFixed(2); localStorage.setItem('lezCoins', walletData.balance); }
+    function renderFilters(){ $('#filters').innerHTML=['All','Arcade','Survival','Puzzle','Online','Weird'].map(f=>`<button class="btn ${state.filter===f?'':'dark'}" data-filter="${f}">${f}</button>`).join(''); }
+    function filteredGames(){ let list=games.filter(g=> state.filter==='All'||g.category===state.filter||g.tags.includes(state.filter)); if(state.search) list=list.filter(g=>(g.title+' '+g.tags.join(' ')+' '+g.description).toLowerCase().includes(state.search)); return list.sort((a,b)=> state.sort==='reward'?b.reward-a.reward:state.sort==='name'?a.title.localeCompare(b.title):state.sort==='newest'?new Date(b.releaseDate)-new Date(a.releaseDate):b.playersOnline-a.playersOnline); }
+    function renderGames(){ renderFilters(); $('#gamesGrid').innerHTML=filteredGames().map(g=>`<article class="card"><button class="wishlist ${state.wishlist.has(g.id)?'active':''}" data-wish="${g.id}">♥</button><div class="thumb"><span>${g.thumbnailPlaceholder}<br>${g.gameType} Slot</span></div><span class="badge-status ${g.status}">${g.status}</span><h3>${g.title}</h3><div class="tags">${g.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><p class="meta">${g.description}</p><p><b>${g.reward.toLocaleString()} LC</b> reward · <span data-online="${g.id}">${g.playersOnline}</span> online · v${g.version}</p><div class="cta"><button class="btn" data-play="${g.id}" ${g.comingSoon?'disabled':''}>${g.comingSoon?'Coming Soon':'Play'}</button><button class="btn dark" data-details="${g.id}">Details</button></div></article>`).join(''); }
+    function renderSide(){ $('#recentRewards').innerHTML=walletData.rewards.map(r=>`<div class="reward-row"><span>▣</span><span>${r}</span><span>LC</span></div>`).join(''); $('#streakDots').innerHTML=Array.from({length:7},(_,i)=>`<span class="dot ${i<5?'done':''}"></span>`).join(''); $('#questsList').innerHTML=quests.map(q=>`<div class="quest"><span>${q.current>=q.target?'☑':'☐'}</span><div><b>${q.name}</b><div class="progress"><span style="width:${Math.min(100,q.current/q.target*100)}%"></span></div><span class="meta">${q.current}/${q.target}</span></div><b>${q.reward} LC</b></div>`).join(''); $('#leaderboard').innerHTML=leaderboardData.map((u,i)=>`<div class="leader-row ${u.you?'you':''}"><b>#${i+1}</b><span>${u.user}</span><b>${u.score.toLocaleString()}</b></div>`).join(''); }
+    function renderStore(){ $('#storeGrid').innerHTML=storeItems.map((it,i)=>`<article class="card"><div class="store-icon">${it.icon}</div><h3>${it.name}</h3><p class="meta">${it.rarity}</p><b>${it.price.toLocaleString()} LC</b><button class="btn" data-buy-item="${i}" style="margin-top:10px">Buy</button></article>`).join(''); }
+    function openModal(id){ $('#'+id).classList.add('open'); } function closeModal(id){ $('#'+id).classList.remove('open'); }
+    function openGame(game){ if(!game||game.comingSoon) return toast('This game is coming soon.', true); openModal('gameModal'); $('#shellTitle').textContent='Game Shell // '+game.title; $('#shellMeta').innerHTML=`${game.status} · ${game.tags.join(', ')} · v${game.version} · Reward ${game.reward} LC · ${game.playersOnline} online`; loadGameModule(game); }
+    function loadGameModule(game){ const stage=$('#shellStage'); stage.innerHTML='<div>Loading isolated container...</div>'; setTimeout(()=>{ stage.innerHTML=''; const wrap=document.createElement('div'); wrap.className='isolated-game-wrapper'; wrap.style.cssText='position:relative;z-index:1;width:100%;padding:30px;text-align:center'; if(game.embedMode==='iframe'){ const iframe=document.createElement('iframe'); iframe.title=game.title; iframe.src=game.gameUrl || 'about:blank'; iframe.sandbox='allow-scripts allow-same-origin allow-pointer-lock allow-gamepad'; iframe.style.cssText='width:100%;height:420px;border:3px solid var(--magenta);background:#000'; wrap.append('Iframe-ready container for '+game.title+' (demo keeps placeholder safe).'); }
+      else if(game.embedMode==='canvas'){ const canvas=document.createElement('canvas'); canvas.width=640; canvas.height=360; canvas.style.cssText='max-width:100%;border:3px solid var(--green);background:#020'; wrap.append(canvas, document.createElement('br'), 'Canvas mount placeholder for '+game.title); }
+      else if(game.embedMode==='webgl'){ wrap.innerHTML='<h3>WebGL build mount placeholder</h3><p>Game module placeholder for '+game.title+'</p>'; }
+      else if(game.embedMode==='external'){ wrap.innerHTML='<h3>External/internal route loader placeholder</h3><p>Game module placeholder for '+game.title+'</p><p class="meta">Future URL: '+game.gameUrl+'</p>'; }
+      else { wrap.innerHTML='<h3>Game module placeholder for '+game.title+'</h3><p class="meta">Replace this isolated wrapper with an HTML5/canvas/iframe/Phaser/Godot/Unity module.</p>'; } stage.appendChild(wrap); },450);
+      $('#shellCode').textContent=`// Future loader hook for ${game.slug}\n// const game = await fetch('/api/games/${game.slug}').then(r => r.json());\n// if (game.embedMode === 'iframe') create sandboxed iframe from controlled gameUrl.\n// if (game.embedMode === 'canvas') mount game engine to canvas.\n// if (game.embedMode === 'webgl') mount WebGL build from /games/${game.slug}/index.html.\n// Reward ${game.reward} LC must be granted only after backend validation; never trust client score/reward data.`; }
+    function countdown(){ const now=new Date(); const end=new Date(now); end.setUTCHours(24,0,0,0); let s=Math.floor((end-now)/1000); const h=String(Math.floor(s/3600)).padStart(2,'0'); s%=3600; const m=String(Math.floor(s/60)).padStart(2,'0'); const sec=String(s%60).padStart(2,'0'); $('#countdown').textContent=`${h}:${m}:${sec}`; }
+    function init(){ updateWallet(); renderGames(); renderSide(); renderStore(); $('#statOnline').textContent=games.reduce((a,g)=>a+g.playersOnline,0).toLocaleString(); setInterval(()=>{ games.forEach(g=>{ if(!g.comingSoon) g.playersOnline=Math.max(0,g.playersOnline+Math.floor(Math.random()*11)-5); }); $('#statOnline').textContent=games.reduce((a,g)=>a+g.playersOnline,0).toLocaleString(); $$('[data-online]').forEach(el=>{ const g=games.find(x=>x.id==el.dataset.online); if(g) el.textContent=g.playersOnline; }); },3500); countdown(); setInterval(countdown,1000); }
+    document.addEventListener('click', e=>{ const t=e.target; if(t.matches('[data-filter]')){ state.filter=t.dataset.filter; renderGames(); } if(t.matches('[data-play]')) openGame(games.find(g=>g.id==t.dataset.play)); if(t.matches('[data-details]')) { const g=games.find(g=>g.id==t.dataset.details); toast(`${g.title}: ${g.description}`); } if(t.matches('[data-wish]')){ const id=Number(t.dataset.wish); state.wishlist.has(id)?state.wishlist.delete(id):state.wishlist.add(id); localStorage.setItem('wishlist', JSON.stringify([...state.wishlist])); renderGames(); } if(t.matches('[data-close]')) closeModal(t.dataset.close); if(t.classList.contains('modal')) closeModal(t.id); if(t.matches('.buyCoinsOpen')) openModal('coinModal'); if(t.matches('[data-package]')){ walletData.balance+=Number(t.dataset.package); updateWallet(); toast(`Added ${Number(t.dataset.package).toLocaleString()} Lez Coins (simulation only).`); closeModal('coinModal'); } if(t.matches('[data-buy-item]')){ const it=storeItems[t.dataset.buyItem]; if(walletData.balance>=it.price){ walletData.balance-=it.price; updateWallet(); toast(`Purchased ${it.name}.`); } else toast('Not enough Lez Coins.', true); } if(t.matches('[data-play-featured]')) openGame(games[0]); if(t.matches('[data-details-featured]')) toast(games[0].description); });
+    $('#sortSelect').addEventListener('change', e=>{ state.sort=e.target.value; renderGames(); }); $('#globalSearch').addEventListener('input', e=>{ state.search=e.target.value.toLowerCase(); renderGames(); }); $('#topPlayBtn').onclick=$('#startPlaying').onclick=()=>openGame(games.find(g=>g.isPlayable)); $('#sendBtn').onclick=()=>toast('Send placeholder — future /api/wallet transfer flow, disabled in demo.'); $('#notifyBtn').onclick=()=>toast('3 system alerts: quests, rewards, store drop.'); $('#fullscreenBtn').onclick=()=>toast('Fullscreen placeholder: connect Element.requestFullscreen() when real games mount.'); $('#restartBtn').onclick=()=>toast('Restart placeholder triggered.'); $('#bugBtn').onclick=()=>toast('Bug report placeholder sent to future support API.'); $('#subscribeBtn').onclick=()=>toast($('#email').value ? 'Subscribed to LEZGAMEZ signal.' : 'Enter an email first.', !$('#email').value);
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape') $$('.modal.open').forEach(m=>m.classList.remove('open')); if(e.key==='/' && document.activeElement.tagName!=='INPUT'){ e.preventDefault(); $('#globalSearch').focus(); } });
+    init();
+  </script>
+</body>
+</html>
