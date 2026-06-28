@@ -5,146 +5,145 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LEZGAMEZ — Zombies, eggs, weird and death</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@600;700&display=swap');
     :root {
-      --bg: #05030a;
-      --panel: #12091f;
-      --panel-2: #1d0e32;
-      --line: #7fff00;
-      --cyan: #00e5ff;
-      --magenta: #ff2bd6;
-      --yellow: #ffe600;
-      --green: #7cff00;
-      --red: #ff335f;
-      --text: #f4fff7;
-      --muted: #b7c8c2;
-      --shadow: 0 0 14px rgba(0,229,255,.30), 0 0 28px rgba(255,43,214,.18);
-      --hard: 3px solid rgba(124,255,0,.92);
+      --bg-main: #07080D;
+      --bg-deep: #03040A;
+      --surface-1: #10121A;
+      --surface-2: #161925;
+      --surface-3: #1E2230;
+      --border-soft: #2A2E3D;
+      --border-strong: #3B4054;
+      --text-main: #F2F0F7;
+      --text-muted: #A5A9BA;
+      --text-dim: #6F7485;
+      --brand-primary: #8B5CF6;
+      --brand-primary-soft: #6D4BD8;
+      --brand-primary-dark: #3B2A78;
+      --accent-warm: #D79A2B;
+      --danger: #D94A4A;
+      --success: #7CA982;
+      --glow-primary: 0 0 20px rgba(139, 92, 246, 0.28);
+      --glow-warm: 0 0 16px rgba(215, 154, 43, 0.22);
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
       background:
-        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.014) 1px, transparent 1px),
-        radial-gradient(circle at 20% 10%, rgba(255,43,214,.18), transparent 30%),
-        radial-gradient(circle at 80% 0%, rgba(0,229,255,.16), transparent 28%),
-        var(--bg);
-      background-size: 38px 38px, 38px 38px, auto, auto, auto;
-      color: var(--text);
-      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', system-ui, sans-serif;
-      letter-spacing: .03em;
+        linear-gradient(rgba(242,240,247,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(242,240,247,.012) 1px, transparent 1px),
+        radial-gradient(circle at 50% -10%, rgba(139,92,246,.13), transparent 34%),
+        var(--bg-main);
+      background-size: 44px 44px, 44px 44px, auto, auto;
+      color: var(--text-main);
+      font-family: Inter, system-ui, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
     }
-    body::before {
-      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
-      background: repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 1px, transparent 1px 4px);
-      mix-blend-mode: overlay; opacity: .28;
-    }
+    body::before { content:""; position: fixed; inset: 0; pointer-events: none; z-index: 9999; background: repeating-linear-gradient(0deg, rgba(242,240,247,.018) 0 1px, transparent 1px 5px); opacity: .32; }
     a { color: inherit; text-decoration: none; }
     button, input, select { font: inherit; }
-    .topbar {
-      position: sticky; top: 0; z-index: 50; display: grid;
-      grid-template-columns: auto 1fr minmax(220px, 360px) auto auto auto; gap: 12px; align-items: center;
-      padding: 14px 18px; background: rgba(7,3,12,.94); border-bottom: var(--hard); box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-    .logo { font-size: clamp(1.4rem, 3vw, 2.4rem); color: var(--green); text-shadow: 2px 0 rgba(255,43,214,.9), -2px 0 rgba(0,229,255,.85), 0 0 12px rgba(124,255,0,.55); }
+    h1, h2, h3, .logo, .section-title, .loader-logo { font-family: 'Space Grotesk', Rajdhani, Inter, sans-serif; letter-spacing: .02em; }
+    b, code, pre, .wallet-balance, .leader-row b, .score-grid b { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .topbar { position: sticky; top: 0; z-index: 50; display: grid; grid-template-columns: auto 1fr minmax(220px, 360px) auto auto auto; gap: 12px; align-items: center; padding: 14px 18px; background: rgba(3,4,10,.94); border-bottom: 2px solid var(--border-strong); backdrop-filter: blur(10px); }
+    .logo { font-size: clamp(1.4rem, 3vw, 2.4rem); color: var(--text-main); text-shadow: 2px 0 rgba(139,92,246,.5); }
     nav { display: flex; gap: 8px; flex-wrap: wrap; }
-    nav a, .pill { border: 2px solid #364046; padding: 9px 11px; background: #0b0d11; color: var(--cyan); text-transform: uppercase; font-size: .86rem; }
-    nav a:hover, .pill:hover { border-color: var(--magenta); color: var(--yellow); transform: translateY(-1px); }
-    .search { width: 100%; background: #000; border: 2px solid var(--cyan); color: var(--text); padding: 11px; outline: none; box-shadow: 0 0 12px rgba(0,229,255,.30); }
-    .btn { cursor: pointer; border: 3px solid var(--text); color: #050607; background: var(--green); padding: 11px 15px; text-transform: uppercase; box-shadow: 5px 5px 0 rgba(255,43,214,.86); transition: .12s; }
-    .btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0 rgba(0,229,255,.82); }
-    .btn.alt { background: var(--cyan); box-shadow: 5px 5px 0 rgba(124,255,0,.82); }
-    .btn.warn { background: var(--yellow); }
-    .btn.dark { background: #0d1015; color: var(--text); border-color: var(--magenta); }
+    nav a, .pill { border: 2px solid var(--border-soft); padding: 9px 11px; background: var(--surface-1); color: var(--text-muted); text-transform: uppercase; font-size: .82rem; font-weight: 800; }
+    nav a:hover, .pill:hover { border-color: var(--brand-primary); color: var(--text-main); transform: translateY(-1px); }
+    .search { width: 100%; background: var(--bg-deep); border: 2px solid var(--border-soft); color: var(--text-main); padding: 11px; outline: none; }
+    .search:focus { border-color: var(--brand-primary); box-shadow: var(--glow-primary); }
+    .btn { cursor: pointer; border: 2px solid var(--brand-primary); color: var(--text-main); background: var(--brand-primary-dark); padding: 12px 16px; text-transform: uppercase; font-weight: 800; transition: .12s; min-height: 44px; }
+    .btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--bg-deep), var(--glow-primary); }
+    .btn.alt, .btn.dark { background: var(--surface-1); color: var(--text-main); border-color: var(--border-strong); box-shadow: none; }
+    .btn.warn { background: var(--surface-1); color: var(--accent-warm); border-color: var(--accent-warm); box-shadow: none; }
+    .btn.danger { color: var(--danger); border-color: var(--danger); background: var(--surface-1); }
     .btn:disabled { opacity: .45; cursor: not-allowed; filter: grayscale(.7); }
     .notif { position: relative; }
-    .badge { position: absolute; top: -10px; right: -9px; background: var(--red); color: white; border: 2px solid white; padding: 1px 6px; font-size: .75rem; }
+    .badge { position: absolute; top: -10px; right: -9px; background: var(--danger); color: var(--text-main); border: 2px solid var(--bg-deep); padding: 1px 6px; font-size: .75rem; }
     .profile { display: grid; grid-template-columns: 42px 1fr; gap: 8px; align-items: center; min-width: 140px; }
-    .avatar { display:grid; place-items:center; width:42px; height:42px; background:linear-gradient(135deg,rgba(255,43,214,.92),rgba(0,229,255,.88)); border:2px solid var(--yellow); }
-    .levelbar { height: 8px; border: 1px solid var(--cyan); background:#050607; margin-top:3px; }
-    .levelbar span { display:block; height:100%; width:68%; background:var(--green); }
+    .avatar { display:grid; place-items:center; width:42px; height:42px; background:var(--surface-3); border:2px solid var(--border-strong); color:var(--brand-primary); }
+    .levelbar, .progress { background:var(--bg-deep); border: 1px solid var(--border-soft); }
+    .levelbar { height: 8px; margin-top:3px; }
+    .levelbar span, .progress span { display:block; height:100%; background:var(--brand-primary-soft); }
     main { max-width: 1500px; margin: 0 auto; padding: 22px; }
-    .hero { border: var(--hard); padding: clamp(24px, 5vw, 56px); background: linear-gradient(135deg, rgba(22,8,38,.96), rgba(5,3,10,.9)); box-shadow: var(--shadow); position:relative; overflow:hidden; }
-    .hero::after { content:"SYSTEM // ARCADE // CHAOS"; position:absolute; right:-25px; top:25px; color:rgba(255,230,0,.12); font-size:4rem; transform:rotate(6deg); }
-    .glitch { font-size: clamp(4rem, 14vw, 11rem); line-height:.82; margin: 0; color: var(--text); text-shadow: 4px 0 rgba(255,43,214,.82), -4px 0 rgba(0,229,255,.78), 0 0 18px rgba(124,255,0,.42); }
-    .slogan { color: var(--yellow); font-size: clamp(1.2rem, 3vw, 2rem); margin: 12px 0; }
-    .subtitle { font-family: Arial, sans-serif; color: #d8fbff; font-size: 1.05rem; max-width: 760px; letter-spacing: 0; }
+    .hero { border: 2px solid var(--border-strong); padding: clamp(24px, 5vw, 56px); background: linear-gradient(135deg, var(--surface-2), var(--bg-deep)); position:relative; overflow:hidden; }
+    .hero::after { content:"SYSTEM // ARCADE // UNDERGROUND"; position:absolute; right:-25px; top:25px; color:rgba(139,92,246,.08); font-size:4rem; transform:rotate(6deg); font-family:'JetBrains Mono', monospace; }
+    .glitch { font-size: clamp(4rem, 14vw, 11rem); line-height:.82; margin: 0; color: var(--text-main); text-shadow: 3px 0 rgba(139,92,246,.38); }
+    .slogan { color: var(--text-muted); font-size: clamp(1.1rem, 3vw, 1.8rem); margin: 12px 0; }
+    .subtitle, .meta { color: var(--text-muted); letter-spacing: 0; }
+    .subtitle { font-size: 1.05rem; max-width: 760px; }
     .cta, .filters, .shell-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
     .stats { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-top:24px; }
-    .stat, .panel, .card { background: rgba(18,9,31,.95); border: 2px solid #354148; padding: 16px; box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset; }
-    .stat b { display:block; color:var(--green); font-size:1.55rem; }
+    .stat, .panel, .card { background: var(--surface-1); border: 2px solid var(--border-soft); padding: 16px; box-shadow: 0 0 0 1px rgba(242,240,247,.025) inset; }
+    .stat b { display:block; color:var(--brand-primary); font-size:1.55rem; }
     .layout { display:grid; grid-template-columns: minmax(0, 1fr) 380px; gap:18px; margin-top:18px; }
     section { scroll-margin-top: 100px; }
-    .section-title { color: var(--cyan); font-size: 2rem; text-shadow: 2px 0 rgba(255,43,214,.78); margin: 0 0 14px; }
-    .featured { display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; border-color: var(--magenta); }
-    .game-frame, .thumb, .store-icon, .shell-stage { display:grid; place-items:center; min-height:250px; background: linear-gradient(135deg, #111, #222 48%, #090909 49%); border:3px solid var(--cyan); color:var(--yellow); text-align:center; position:relative; overflow:hidden; }
-    .game-frame::before, .thumb::before, .shell-stage::before { content:""; position:absolute; inset:-50%; background: repeating-conic-gradient(from 0deg, rgba(124,255,0,.14) 0 8deg, transparent 8deg 18deg); animation: spin 16s linear infinite; }
+    .section-title { color: var(--text-main); font-size: 2rem; margin: 0 0 14px; }
+    .featured { display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; border-color: var(--border-strong); }
+    .game-frame, .thumb, .store-icon, .shell-stage { display:grid; place-items:center; min-height:250px; background: linear-gradient(135deg, var(--bg-deep), var(--surface-2)); border:2px solid var(--border-strong); color:var(--text-muted); text-align:center; position:relative; overflow:hidden; }
+    .game-frame::before, .thumb::before, .shell-stage::before { content:""; position:absolute; inset:-50%; background: repeating-conic-gradient(from 0deg, rgba(139,92,246,.08) 0 6deg, transparent 6deg 24deg); animation: spin 24s linear infinite; }
     .game-frame span, .thumb span, .shell-stage > div { position:relative; z-index:1; }
     @keyframes spin { to { transform:rotate(360deg); } }
     .tags { display:flex; gap:7px; flex-wrap:wrap; margin: 10px 0; }
-    .tag { border:1px solid var(--cyan); color:var(--cyan); padding:4px 7px; background:#050607; font-family:Arial,sans-serif; font-size:.78rem; }
+    .tag { border:1px solid var(--border-soft); color:var(--text-dim); padding:4px 7px; background:var(--bg-deep); font-size:.78rem; }
     .library-tools { display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center; }
-    select { background:#000; color:var(--yellow); border:2px solid var(--yellow); padding:10px; }
-    .games-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:14px; }
-    .card { border-color:#46535b; position:relative; }
-    .card:hover { border-color:var(--green); box-shadow:var(--shadow); }
+    select { background:var(--bg-deep); color:var(--text-main); border:2px solid var(--border-soft); padding:10px; }
+    .games-grid, .store-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:14px; }
+    .store-grid { grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap:12px; }
+    .card { position:relative; }
+    .card:hover { border-color:var(--border-strong); transform: translateY(-1px); }
     .thumb { min-height:145px; margin-bottom:12px; }
-    .badge-status { display:inline-block; padding:4px 8px; border:2px solid var(--green); color:var(--green); background:#001a08; }
-    .badge-status.coming-soon { color:var(--yellow); border-color:var(--yellow); background:#1b1700; }
-    .badge-status.beta { color:var(--magenta); border-color:var(--magenta); background:#1b0017; }
-    .badge-status.live { color:var(--cyan); border-color:var(--cyan); background:#00181b; }
-    .meta { color: var(--muted); font-family: Arial, sans-serif; font-size:.9rem; letter-spacing:0; }
-    .wishlist { position:absolute; top:10px; right:10px; width:42px; height:42px; background:#000; color:var(--magenta); border:2px solid var(--magenta); cursor:pointer; }
-    .wishlist.active { background:var(--magenta); color:#000; }
+    .badge-status { display:inline-block; padding:4px 8px; border:2px solid var(--border-strong); color:var(--text-muted); background:var(--surface-2); font-size:.78rem; }
+    .badge-status.coming-soon { color:var(--accent-warm); border-color:var(--accent-warm); background:rgba(215,154,43,.08); }
+    .badge-status.beta { color:var(--brand-primary); border-color:var(--brand-primary-dark); background:rgba(139,92,246,.08); }
+    .badge-status.live { color:var(--success); border-color:var(--success); background:rgba(124,169,130,.08); }
+    .wishlist { position:absolute; top:10px; right:10px; width:42px; height:42px; background:var(--bg-deep); color:var(--text-dim); border:2px solid var(--border-soft); cursor:pointer; }
+    .wishlist.active { background:var(--brand-primary-dark); color:var(--text-main); border-color:var(--brand-primary); box-shadow:var(--glow-primary); }
     .sidebar { display:flex; flex-direction:column; gap:14px; }
-    .wallet-balance { font-size:2.25rem; color:var(--green); text-shadow:0 0 12px rgba(124,255,0,.55); }
-    .progress { height:13px; border:1px solid var(--cyan); background:#020203; margin:7px 0; }
-    .progress span { display:block; height:100%; background:linear-gradient(90deg,rgba(124,255,0,.96),rgba(0,229,255,.92)); }
-    .dots { display:flex; gap:8px; } .dot { width:22px;height:22px;border:2px solid var(--cyan);background:#020203; } .dot.done { background:var(--green); box-shadow:0 0 10px rgba(124,255,0,.58); }
-    .leader-row, .reward-row, .quest, .store-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; border-top:1px solid #354148; padding:10px 0; }
-    .you { color:var(--yellow); background:rgba(255,230,0,.08); }
-    .store-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap:12px; }
-    .store-icon { min-height:95px; font-size:2rem; }
-    footer { margin-top:24px; border-top:var(--hard); padding:28px 22px; background:#05030a; display:grid; grid-template-columns: 1.4fr repeat(3,1fr) 1.4fr; gap:18px; }
-    footer ul { list-style:none; padding:0; margin:8px 0 0; color:var(--muted); font-family:Arial,sans-serif; }
+    .wallet-balance { font-size:2.25rem; color:var(--accent-warm); text-shadow:var(--glow-warm); }
+    .progress { height:13px; margin:7px 0; }
+    .dots { display:flex; gap:8px; } .dot { width:22px;height:22px;border:2px solid var(--border-soft);background:var(--bg-deep); } .dot.done { background:var(--brand-primary-dark); border-color:var(--brand-primary); }
+    .leader-row, .reward-row, .quest, .store-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; border-top:1px solid var(--border-soft); padding:10px 0; }
+    .you { color:var(--text-main); background:rgba(139,92,246,.08); }
+    .store-icon { min-height:95px; font-size:2rem; color:var(--accent-warm); }
+    footer { margin-top:24px; border-top:2px solid var(--border-strong); padding:28px 22px; background:var(--bg-deep); display:grid; grid-template-columns: 1.4fr repeat(3,1fr) 1.4fr; gap:18px; }
+    footer ul { list-style:none; padding:0; margin:8px 0 0; color:var(--text-muted); }
     footer li { margin:7px 0; }
-    .modal { display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,.82); padding:20px; overflow:auto; }
+    .modal { display:none; position:fixed; inset:0; z-index:100; background:rgba(3,4,10,.88); padding:20px; overflow:auto; }
     .modal.open { display:grid; place-items:center; }
-    .modal-box { width:min(1100px, 96vw); background:#0b0d11; border:3px solid var(--green); box-shadow:var(--shadow); padding:18px; max-height:92vh; overflow:auto; }
+    .modal-box, .loader-card, .result-card { background:var(--surface-1); border:2px solid var(--border-strong); padding:18px; }
+    .modal-box { width:min(1100px, 96vw); max-height:92vh; overflow:auto; }
     .shell-stage { min-height: min(56vh, 560px); margin:14px 0; }
-    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing:0; }
-    pre { background:#000; color:#9dffb5; border:1px solid #354148; padding:12px; white-space:pre-wrap; }
+    code, pre { letter-spacing:0; }
+    pre { background:var(--bg-deep); color:var(--text-muted); border:1px solid var(--border-soft); padding:12px; white-space:pre-wrap; }
     .packages { display:grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
     .toastbox { position:fixed; right:18px; bottom:18px; z-index:150; display:flex; flex-direction:column; gap:8px; }
-    .toast { background:#050607; border:2px solid var(--cyan); color:var(--text); padding:12px 14px; box-shadow:var(--shadow); }
-
+    .toast { background:var(--surface-1); border:2px solid var(--brand-primary); color:var(--text-main); padding:12px 14px; box-shadow:var(--glow-primary); }
     .play-shell { max-width: 1500px; margin: 0 auto; }
-    .shell-loading { min-height: calc(100vh - 150px); display:grid; place-items:center; border: var(--hard); background: radial-gradient(circle at 50% 0%, rgba(0,229,255,.22), transparent 36%), #05030a; padding:24px; overflow:hidden; position:relative; }
-    .shell-loading::after { content:"LOADING // SAFE // SANDBOX"; position:absolute; bottom:8%; left:5%; color:rgba(215,198,90,.08); font-size:clamp(2rem,8vw,7rem); transform:rotate(-4deg); }
-    .loader-card { position:relative; z-index:1; width:min(760px,96vw); text-align:center; background:rgba(18,9,31,.94); border:3px solid var(--cyan); padding:28px; box-shadow: var(--shadow); }
-    .loader-logo { font-size:clamp(3rem,10vw,7rem); color:var(--green); text-shadow:4px 0 var(--magenta), -4px 0 var(--cyan); animation: glitchPulse .9s infinite alternate; }
-    .neon-loader { height:16px; border:2px solid var(--magenta); background:#000; margin:22px 0; overflow:hidden; }
-    .neon-loader span { display:block; height:100%; width:45%; background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow)); animation: loadSweep 1.1s infinite linear; box-shadow:0 0 16px var(--cyan); }
-    .tip-box { font-family:Arial,sans-serif; letter-spacing:0; color:#c9dcde; min-height:44px; }
+    .shell-loading { min-height: calc(100vh - 150px); display:grid; place-items:center; border: 2px solid var(--border-strong); background: var(--bg-deep); padding:24px; overflow:hidden; position:relative; }
+    .shell-loading::after { content:"LOADING // SAFE // SANDBOX"; position:absolute; bottom:8%; left:5%; color:rgba(139,92,246,.08); font-size:clamp(2rem,8vw,7rem); transform:rotate(-4deg); }
+    .loader-card { position:relative; z-index:1; width:min(760px,96vw); text-align:center; box-shadow: var(--glow-primary); }
+    .loader-logo { font-size:clamp(3rem,10vw,7rem); color:var(--text-main); text-shadow:3px 0 rgba(139,92,246,.45); animation: glitchPulse .9s infinite alternate; }
+    .signal-loader { height:16px; border:2px solid var(--brand-primary); background:var(--bg-deep); margin:22px 0; overflow:hidden; }
+    .signal-loader span { display:block; height:100%; width:45%; background:var(--brand-primary); animation: loadSweep 1.1s infinite linear; box-shadow:var(--glow-primary); }
+    .tip-box { color:var(--text-muted); min-height:44px; }
     .shell-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin:12px 0; }
     .shell-toolbar .meta { flex:1; min-width:220px; }
-    .game-viewport { min-height: min(68vh, 720px); aspect-ratio:16/9; width:100%; border:3px solid var(--cyan); background:#010204; display:grid; place-items:center; position:relative; overflow:hidden; }
-    .game-viewport iframe, .game-viewport canvas { width:100%; height:100%; border:0; display:block; background:#050607; }
+    .game-viewport { min-height: min(68vh, 720px); aspect-ratio:16/9; width:100%; border:2px solid var(--border-strong); background:var(--bg-deep); display:grid; place-items:center; position:relative; overflow:hidden; }
+    .game-viewport iframe, .game-viewport canvas { width:100%; height:100%; border:0; display:block; background:var(--bg-deep); }
     .game-placeholder { text-align:center; padding:24px; z-index:1; }
     .game-placeholder .big { font-size: clamp(3rem, 9vw, 8rem); }
-    .pause-overlay, .adblock-overlay, .post-game { position:absolute; inset:0; display:none; place-items:center; background:rgba(0,0,0,.78); z-index:4; padding:18px; }
+    .pause-overlay, .adblock-overlay, .post-game { position:absolute; inset:0; display:none; place-items:center; background:rgba(3,4,10,.82); z-index:4; padding:18px; }
     .pause-overlay.open, .adblock-overlay.open, .post-game.open { display:grid; }
-    .result-card { width:min(780px,94vw); background:#0b0d11; border:3px solid var(--green); padding:18px; box-shadow:var(--shadow); }
+    .result-card { width:min(780px,94vw); }
     .score-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin:14px 0; }
-    .score-grid div { border:2px solid #354148; padding:12px; background:#050607; }
+    .score-grid div { border:2px solid var(--border-soft); padding:12px; background:var(--bg-deep); }
+    .score-grid .wallet-balance { color: var(--brand-primary); text-shadow: var(--glow-primary); }
     @keyframes loadSweep { from { transform:translateX(-110%); } to { transform:translateX(240%); } }
-    @keyframes glitchPulse { 0% { transform:skewX(-2deg); filter:hue-rotate(0deg); } 100% { transform:skewX(2deg); filter:hue-rotate(25deg); } }
+    @keyframes glitchPulse { 0% { transform:skewX(-1deg); } 100% { transform:skewX(1deg); } }
     @media (max-width: 1050px) { .topbar { grid-template-columns:1fr auto; } nav, .topbar .search, .profile { grid-column:1/-1; } .layout, .featured { grid-template-columns:1fr; } footer { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 650px) { main { padding:12px; } .score-grid { grid-template-columns:1fr; } .game-viewport { aspect-ratio:9/16; min-height:62vh; } .stats { grid-template-columns:1fr 1fr; } .library-tools { grid-template-columns:1fr; } .btn { width:100%; } footer { grid-template-columns:1fr; } .topbar { padding:10px; } }
+    @media (max-width: 650px) { main { padding:12px; } .score-grid, .stats, .library-tools { grid-template-columns:1fr; } .game-viewport { aspect-ratio:9/16; min-height:62vh; } .btn { width:100%; } footer { grid-template-columns:1fr; } .topbar { padding:10px; } .glitch { font-size: clamp(3rem, 20vw, 6rem); } }
   </style>
 </head>
 <body>
@@ -186,7 +185,7 @@
       </div>
 
       <aside class="sidebar">
-        <section class="panel" id="wallet"><h2 class="section-title">Your Wallet</h2><div class="wallet-balance"><span id="walletBalance">0</span> LC</div><p class="meta">≈ $<span id="walletUsd">0.00</span> internal game value only. Not money.</p><div class="cta"><button class="btn buyCoinsOpen">Buy Coins</button><button class="btn dark" id="sendBtn">Send</button></div><h3>Recent Rewards</h3><div id="recentRewards"></div></section>
+        <section class="panel" id="wallet"><h2 class="section-title">Your Wallet</h2><div class="wallet-balance"><span id="walletBalance">0</span> LC</div><p class="meta"><span id="walletUsd">Internal credits only</span> · not money, not withdrawable.</p><div class="cta"><button class="btn buyCoinsOpen">Buy Coins</button><button class="btn dark" id="sendBtn">Send</button></div><h3>Recent Rewards</h3><div id="recentRewards"></div></section>
         <section class="panel"><h2 class="section-title">Daily Streak</h2><div class="wallet-balance"><span id="streakDays">5</span> days</div><div class="dots" id="streakDots"></div><p>Countdown: <b id="countdown">--:--:--</b></p><p class="meta">Next reward: 500 Lez Coins</p></section>
         <section class="panel" id="quests"><h2 class="section-title">Daily Quests</h2><div id="questsList"></div></section>
         <section class="panel" id="rankings"><h2 class="section-title">Global Leaderboard</h2><div id="leaderboard"></div></section>
@@ -196,8 +195,8 @@
 
   <footer><div><div class="logo">LEZGAMEZ</div><p class="meta">Underground arcade OS for original absurd browser games.</p></div><div><b>Platform</b><ul><li>About Us</li><li>Games</li><li>Partners</li></ul></div><div><b>Support</b><ul><li>Help Center</li><li>Terms</li><li>Privacy</li></ul></div><div><b>Community</b><ul><li>Discord</li><li>YouTube</li><li>TikTok</li></ul></div><div><b>Newsletter</b><input id="email" class="search" type="email" placeholder="you@arcade.null"><button class="btn" id="subscribeBtn" style="margin-top:8px">Subscribe</button></div></footer>
 
-  <div class="modal" id="gameModal" role="dialog" aria-modal="true"><div class="modal-box"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 class="section-title" id="shellTitle">Game Shell</h2><button class="btn dark" data-close="gameModal">Close</button></div><div id="shellMeta" class="meta"></div><div class="shell-stage" id="shellStage"></div><div class="shell-actions"><button class="btn dark" id="fullscreenBtn">Fullscreen</button><button class="btn dark" id="restartBtn">Restart placeholder</button><button class="btn warn" id="bugBtn">Report bug</button></div><pre id="shellCode"></pre></div></div>
-  <div class="modal" id="coinModal" role="dialog" aria-modal="true"><div class="modal-box"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 class="section-title">Buy Lez Coins</h2><button class="btn dark" data-close="coinModal">Close</button></div><p class="meta"><b>Disclaimer:</b> Coins are internal platform credits only. They are not withdrawable. They do not represent money. They have no external monetary value. They cannot be transferred outside the platform.</p><p class="meta">Crypto checkout placeholder — not active.</p><div class="packages"><button class="btn" data-package="1000">1,000 Lez Coins</button><button class="btn alt" data-package="3000">3,000 Lez Coins</button><button class="btn warn" data-package="8000">8,000 Lez Coins</button></div></div></div>
+  <div class="modal" id="gameModal" role="dialog" aria-modal="true"><div class="modal-box"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 class="section-title" id="shellTitle">Game Shell</h2><button class="btn dark" data-close="gameModal">Close</button></div><div id="shellMeta" class="meta"></div><div class="shell-stage" id="shellStage"></div><div class="shell-actions"><button class="btn dark" id="fullscreenBtn">Fullscreen</button><button class="btn dark" id="restartBtn">Restart placeholder</button><button class="btn danger" id="bugBtn">Report bug</button></div><pre id="shellCode"></pre></div></div>
+  <div class="modal" id="coinModal" role="dialog" aria-modal="true"><div class="modal-box"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 class="section-title">Buy Lez Coins</h2><button class="btn dark" data-close="coinModal">Close</button></div><p class="meta"><b>Disclaimer:</b> Coins are internal platform credits only. They are not withdrawable. They do not represent money. They have no external monetary value. They cannot be transferred outside the platform.</p><p class="meta">Checkout placeholder — no real-money or external transfer is active.</p><div class="packages"><button class="btn" data-package="1000">1,000 Lez Coins</button><button class="btn alt" data-package="3000">3,000 Lez Coins</button><button class="btn warn" data-package="8000">8,000 Lez Coins</button></div></div></div>
   <div class="toastbox" id="toastbox"></div>
 
   <script>
@@ -207,39 +206,39 @@
 
     const GAME_EVENTS = ['GAME_READY','GAME_START','GAME_PAUSE','GAME_RESUME','GAME_OVER','LEVEL_COMPLETE','SCORE_SUBMIT','COINS_EARNED','AD_BREAK_REQUEST','REWARD_REQUEST','BUG_REPORT'];
     const games = [
-      {id:'grz',title:'Golden Rain Zombies',slug:'golden-rain-zombies',status:'live',shortDescription:'Umbrella survival against a toxic golden zombie storm.',fullDescription:'Survive with your umbrella while toxic golden rain turns the city into a zombie horde. Earn Lez Coins for time alive, rescues, and no-hit streaks.',category:'Survival',tags:['zombies','survival','weird'],thumbnail:'☔🧟',isPlayable:true,gameUrl:'/games/golden-rain-zombies/index.html',gameType:'html',shellMode:'placeholder',quickTips:['Keep the umbrella open during toxic drops.','Rescue humans for coin multipliers.','No-hit streaks improve your server-validated score.'],gameConfig:{difficulty:'normal',maxSessionMinutes:5},supportedDevices:'both',controls:{mobile:'Swipe to move, tap to shield',desktop:'WASD/Arrows to move, Space to shield'},rewardRules:{baseCoins:75,bonus:'Up to 750 LC for 5 minute survival'},adRules:{preRoll:false,rewarded:'Optional revive ad'},storeCompatibility:['Glitch Umbrella','Neon Skull Mask'],releaseDate:'2026-06-01'},
-      {id:'hntq',title:'Huevo No Te Quiebres',slug:'huevo-no-te-quiebres',status:'beta',shortDescription:'Protect a fragile egg hero from brutal neon traps.',fullDescription:'Balance a fragile egg hero across death traps, bad jokes, moving panels, and hostile physics.',category:'Puzzle',tags:['egg','puzzle','physics'],thumbnail:'🥚💀',isPlayable:true,gameUrl:'/games/huevo-no-te-quiebres/index.html',gameType:'canvas',supportedDevices:'both',controls:{mobile:'Tilt buttons and tap jump',desktop:'A/D to tilt, Space to jump'},rewardRules:{baseCoins:60,bonus:'Perfect level grants 530 LC'},adRules:{preRoll:false,rewarded:'Optional checkpoint retry'},storeCompatibility:['Cyber Egg','Death Banner'],releaseDate:'2026-05-15'},
-      {id:'break',title:'Break Me',slug:'break-me',status:'live',shortDescription:'Smash cursed blocks before they smash your score.',fullDescription:'A frantic brick-breaker with glitch walls, angry multipliers, and escalating death panels.',category:'Arcade',tags:['breakout','neon','score'],thumbnail:'🧱⚡',isPlayable:true,gameUrl:'/games/break-me/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Drag paddle',desktop:'Mouse/Arrows to move paddle'},rewardRules:{baseCoins:45,bonus:'Combo chains multiply LC'},adRules:{preRoll:false,rewarded:'Optional second ball'},storeCompatibility:['Death Banner'],releaseDate:'2026-04-12'},
+      {id:'grz',title:'Golden Rain Zombies',slug:'golden-rain-zombies',status:'live',shortDescription:'Umbrella survival against a toxic golden zombie storm.',fullDescription:'Survive with your umbrella while toxic golden rain turns the city into a zombie horde. Earn Lez Coins for time alive, rescues, and no-hit streaks.',category:'Survival',tags:['zombies','survival','weird'],thumbnail:'☔🧟',isPlayable:true,gameUrl:'/games/golden-rain-zombies/index.html',gameType:'html',shellMode:'placeholder',quickTips:['Keep the umbrella open during toxic drops.','Rescue humans for coin multipliers.','No-hit streaks improve your server-validated score.'],gameConfig:{difficulty:'normal',maxSessionMinutes:5},supportedDevices:'both',controls:{mobile:'Swipe to move, tap to shield',desktop:'WASD/Arrows to move, Space to shield'},rewardRules:{baseCoins:75,bonus:'Up to 750 LC for 5 minute survival'},adRules:{preRoll:false,rewarded:'Optional revive ad'},storeCompatibility:['Glitch Umbrella','Void Skull Mask'],releaseDate:'2026-06-01'},
+      {id:'hntq',title:'Huevo No Te Quiebres',slug:'huevo-no-te-quiebres',status:'beta',shortDescription:'Protect a fragile egg hero from brutal arcade traps.',fullDescription:'Balance a fragile egg hero across death traps, bad jokes, moving panels, and hostile physics.',category:'Puzzle',tags:['egg','puzzle','physics'],thumbnail:'🥚💀',isPlayable:true,gameUrl:'/games/huevo-no-te-quiebres/index.html',gameType:'canvas',supportedDevices:'both',controls:{mobile:'Tilt buttons and tap jump',desktop:'A/D to tilt, Space to jump'},rewardRules:{baseCoins:60,bonus:'Perfect level grants 530 LC'},adRules:{preRoll:false,rewarded:'Optional checkpoint retry'},storeCompatibility:['Cyber Egg','Death Banner'],releaseDate:'2026-05-15'},
+      {id:'break',title:'Break Me',slug:'break-me',status:'live',shortDescription:'Smash cursed blocks before they smash your score.',fullDescription:'A frantic brick-breaker with glitch walls, angry multipliers, and escalating death panels.',category:'Arcade',tags:['breakout','arcade','score'],thumbnail:'🧱⚡',isPlayable:true,gameUrl:'/games/break-me/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Drag paddle',desktop:'Mouse/Arrows to move paddle'},rewardRules:{baseCoins:45,bonus:'Combo chains multiply LC'},adRules:{preRoll:false,rewarded:'Optional second ball'},storeCompatibility:['Death Banner'],releaseDate:'2026-04-12'},
       {id:'cell',title:'Cell Front Lite',slug:'cell-front-lite',status:'live',shortDescription:'Micro squad tactics in a fast cell-war arena.',fullDescription:'Command microscopic squads in short tactical waves built for quick browser sessions.',category:'Strategy',tags:['cells','tactics','lite'],thumbnail:'🧫⚔',isPlayable:true,gameUrl:'/games/cell-front-lite/index.html',gameType:'iframe',supportedDevices:'desktop',controls:{mobile:'Touch command wheel',desktop:'Mouse select, Q/E abilities'},rewardRules:{baseCoins:90,bonus:'Wave streaks unlock 900 LC'},adRules:{preRoll:false,rewarded:'Optional supply crate'},storeCompatibility:['Toxic Backpack'],releaseDate:'2026-03-22'},
-      {id:'ecm',title:'Egg Catch Me',slug:'egg-catch-me',status:'live',shortDescription:'Catch cyber eggs before the farm explodes.',fullDescription:'Sprint through neon farms and catch cyber eggs while cursed chickens rewrite the rules.',category:'Arcade',tags:['egg','runner','catch'],thumbnail:'🥚⚡',isPlayable:true,gameUrl:'/games/egg-catch-me/index.html',gameType:'canvas',supportedDevices:'mobile',controls:{mobile:'Swipe lanes',desktop:'Arrows to change lanes'},rewardRules:{baseCoins:42,bonus:'Golden egg grants 420 LC'},adRules:{preRoll:false,rewarded:'Optional magnet power-up'},storeCompatibility:['Cyber Egg'],releaseDate:'2026-06-20'},
+      {id:'ecm',title:'Egg Catch Me',slug:'egg-catch-me',status:'live',shortDescription:'Catch cyber eggs before the farm explodes.',fullDescription:'Sprint through dark arcade farms and catch cyber eggs while cursed chickens rewrite the rules.',category:'Arcade',tags:['egg','runner','catch'],thumbnail:'🥚⚡',isPlayable:true,gameUrl:'/games/egg-catch-me/index.html',gameType:'canvas',supportedDevices:'mobile',controls:{mobile:'Swipe lanes',desktop:'Arrows to change lanes'},rewardRules:{baseCoins:42,bonus:'Golden egg grants 420 LC'},adRules:{preRoll:false,rewarded:'Optional magnet power-up'},storeCompatibility:['Cyber Egg'],releaseDate:'2026-06-20'},
       {id:'gdd',title:'Gravity Dungeon Dash',slug:'gravity-dungeon-dash',status:'live',shortDescription:'Flip gravity inside an angry rectangle dungeon.',fullDescription:'Flip gravity in a brutal dungeon built by angry rectangles, spikes, doors, and impossible timing.',category:'Arcade',tags:['gravity','dungeon','dash'],thumbnail:'🌀🏰',isPlayable:true,gameUrl:'/games/gravity-dungeon-dash/index.html',gameType:'iframe',supportedDevices:'both',controls:{mobile:'Tap to flip',desktop:'Space/Click to flip'},rewardRules:{baseCoins:61,bonus:'No-death dungeon grants 610 LC'},adRules:{preRoll:false,rewarded:'Optional shield'},storeCompatibility:['Glitch Umbrella'],releaseDate:'2026-04-09'},
       {id:'trash',title:'Trash Fisher',slug:'trash-fisher',status:'beta',shortDescription:'Fish radioactive trash from a cyber swamp.',fullDescription:'Hook trash, dodge mutant fish, and convert disgusting loot into arcade rewards.',category:'Casual',tags:['fishing','trash','weird'],thumbnail:'🎣☣',isPlayable:true,gameUrl:'/games/trash-fisher/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Hold and release cast',desktop:'Mouse hold and release'},rewardRules:{baseCoins:35,bonus:'Rare junk streak grants 350 LC'},adRules:{preRoll:false,rewarded:'Optional double catch'},storeCompatibility:['Toxic Backpack'],releaseDate:'2026-07-03'},
       {id:'panels',title:'Crazy Panels',slug:'crazy-panels',status:'beta',shortDescription:'Rearrange cursed panels while the UI fights back.',fullDescription:'A puzzle arcade game where the board glitches, mocks you, and moves when you blink.',category:'Puzzle',tags:['panels','puzzle','glitch'],thumbnail:'▦🤯',isPlayable:true,gameUrl:'/games/crazy-panels/index.html',gameType:'canvas',supportedDevices:'both',controls:{mobile:'Tap and drag panels',desktop:'Mouse drag panels'},rewardRules:{baseCoins:39,bonus:'Fast solve grants 390 LC'},adRules:{preRoll:false,rewarded:'Optional hint'},storeCompatibility:['Death Banner'],releaseDate:'2026-02-17'},
-      {id:'crypt',title:'Crypt Flap',slug:'crypt-flap',status:'live',shortDescription:'Flap through vampire servers and tombstone popups.',fullDescription:'A one-button crypt runner with bats, server coffins, and brutal score chasing.',category:'Arcade',tags:['flap','crypt','one-button'],thumbnail:'🦇🪦',isPlayable:true,gameUrl:'/games/crypt-flap/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Tap to flap',desktop:'Space/Click to flap'},rewardRules:{baseCoins:47,bonus:'High score grants 470 LC'},adRules:{preRoll:false,rewarded:'Optional revive'},storeCompatibility:['Neon Skull Mask'],releaseDate:'2026-06-18'},
-      {id:'barricade',title:'Barricade in the Night Lite',slug:'barricade-in-the-night-lite',status:'coming_soon',shortDescription:'Build barricades before the night eats the street.',fullDescription:'A lite survival builder about barricades, scarce ammo, and screaming neon shadows.',category:'Survival',tags:['night','builder','lite'],thumbnail:'🌙🧱',isPlayable:false,gameUrl:'/games/barricade-in-the-night-lite/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Tap build slots',desktop:'Mouse build, R rotate'},rewardRules:{baseCoins:0,bonus:'Rewards open at beta'},adRules:{preRoll:false,rewarded:'TBD'},storeCompatibility:['Toxic Backpack','Death Banner'],releaseDate:'2026-09-10'},
-      {id:'bomb',title:'Bomb Wars Stickman Lite',slug:'bomb-wars-stickman-lite',status:'coming_soon',shortDescription:'Stickman demolition arena with chain reactions.',fullDescription:'A compact arena bomber with stickmen, ridiculous explosions, and short PvP-ready rounds.',category:'Action',tags:['bombs','stickman','lite'],thumbnail:'💣🏃',isPlayable:false,gameUrl:'/games/bomb-wars-stickman-lite/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Virtual stick + bomb',desktop:'WASD move, Space bomb'},rewardRules:{baseCoins:0,bonus:'Rewards open at launch'},adRules:{preRoll:false,rewarded:'TBD'},storeCompatibility:['Neon Skull Mask'],releaseDate:'2026-08-01'},
+      {id:'crypt',title:'Crypt Flap',slug:'crypt-flap',status:'live',shortDescription:'Flap through vampire servers and tombstone popups.',fullDescription:'A one-button crypt runner with bats, server coffins, and brutal score chasing.',category:'Arcade',tags:['flap','crypt','one-button'],thumbnail:'🦇🪦',isPlayable:true,gameUrl:'/games/crypt-flap/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Tap to flap',desktop:'Space/Click to flap'},rewardRules:{baseCoins:47,bonus:'High score grants 470 LC'},adRules:{preRoll:false,rewarded:'Optional revive'},storeCompatibility:['Void Skull Mask'],releaseDate:'2026-06-18'},
+      {id:'barricade',title:'Barricade in the Night Lite',slug:'barricade-in-the-night-lite',status:'coming_soon',shortDescription:'Build barricades before the night eats the street.',fullDescription:'A lite survival builder about barricades, scarce ammo, and screaming digital shadows.',category:'Survival',tags:['night','builder','lite'],thumbnail:'🌙🧱',isPlayable:false,gameUrl:'/games/barricade-in-the-night-lite/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Tap build slots',desktop:'Mouse build, R rotate'},rewardRules:{baseCoins:0,bonus:'Rewards open at beta'},adRules:{preRoll:false,rewarded:'TBD'},storeCompatibility:['Toxic Backpack','Death Banner'],releaseDate:'2026-09-10'},
+      {id:'bomb',title:'Bomb Wars Stickman Lite',slug:'bomb-wars-stickman-lite',status:'coming_soon',shortDescription:'Stickman demolition arena with chain reactions.',fullDescription:'A compact arena bomber with stickmen, ridiculous explosions, and short PvP-ready rounds.',category:'Action',tags:['bombs','stickman','lite'],thumbnail:'💣🏃',isPlayable:false,gameUrl:'/games/bomb-wars-stickman-lite/index.html',gameType:'html',supportedDevices:'both',controls:{mobile:'Virtual stick + bomb',desktop:'WASD move, Space bomb'},rewardRules:{baseCoins:0,bonus:'Rewards open at launch'},adRules:{preRoll:false,rewarded:'TBD'},storeCompatibility:['Void Skull Mask'],releaseDate:'2026-08-01'},
       {id:'parkour',title:'Parkour Sky View',slug:'parkour-sky-view',status:'beta',shortDescription:'Jump rooftops from a dizzy top-down sky camera.',fullDescription:'A brutal parkour runner where every platform looks safe until it starts moving.',category:'Runner',tags:['parkour','sky','runner'],thumbnail:'🏙️🪽',isPlayable:true,gameUrl:'/games/parkour-sky-view/index.html',gameType:'canvas',supportedDevices:'both',controls:{mobile:'Swipe jump/dash',desktop:'WASD move, Space jump'},rewardRules:{baseCoins:55,bonus:'Clean route grants 550 LC'},adRules:{preRoll:false,rewarded:'Optional checkpoint'},storeCompatibility:['Death Banner'],releaseDate:'2026-07-22'},
       {id:'inflation',title:'Inflation Run',slug:'inflation-run',status:'live',shortDescription:'Grow, shrink, and dodge economy monsters.',fullDescription:'A weird runner where your character inflates, deflates, bounces, and bankrupts enemies.',category:'Runner',tags:['runner','weird','physics'],thumbnail:'🎈💸',isPlayable:true,gameUrl:'/games/inflation-run/index.html',gameType:'html',supportedDevices:'mobile',controls:{mobile:'Swipe lanes, hold inflate',desktop:'Arrows, hold Shift inflate'},rewardRules:{baseCoins:50,bonus:'Risk route grants 500 LC'},adRules:{preRoll:false,rewarded:'Optional coin doubler'},storeCompatibility:['Toxic Backpack'],releaseDate:'2026-05-28'},
-      {id:'cardboard',title:'Cardboard Shooter Lite',slug:'cardboard-shooter-lite',status:'coming_soon',shortDescription:'Shoot cardboard demons in a duct-tape arena.',fullDescription:'A crunchy low-poly shooter with cardboard monsters, glue traps, and fast lite missions.',category:'Shooter',tags:['shooter','cardboard','lite'],thumbnail:'📦🔫',isPlayable:false,gameUrl:'/games/cardboard-shooter-lite/index.html',gameType:'iframe',supportedDevices:'desktop',controls:{mobile:'Touch aim experimental',desktop:'WASD move, mouse aim/shoot'},rewardRules:{baseCoins:0,bonus:'Rewards open at launch'},adRules:{preRoll:false,rewarded:'TBD'},storeCompatibility:['Neon Skull Mask','Death Banner'],releaseDate:'2026-10-04'}
+      {id:'cardboard',title:'Cardboard Shooter Lite',slug:'cardboard-shooter-lite',status:'coming_soon',shortDescription:'Shoot cardboard demons in a duct-tape arena.',fullDescription:'A crunchy low-poly shooter with cardboard monsters, glue traps, and fast lite missions.',category:'Shooter',tags:['shooter','cardboard','lite'],thumbnail:'📦🔫',isPlayable:false,gameUrl:'/games/cardboard-shooter-lite/index.html',gameType:'iframe',supportedDevices:'desktop',controls:{mobile:'Touch aim experimental',desktop:'WASD move, mouse aim/shoot'},rewardRules:{baseCoins:0,bonus:'Rewards open at launch'},adRules:{preRoll:false,rewarded:'TBD'},storeCompatibility:['Void Skull Mask','Death Banner'],releaseDate:'2026-10-04'}
     ];
     const userContext={ userId:'user_lez_master', language:navigator.language?.split('-')[0]||'en', walletBalance:0, inventory:['Starter Glitch Umbrella','Beta Death Banner'], equippedItems:{umbrella:'Starter Glitch Umbrella',banner:'Beta Death Banner'}, adStatus:'available', adblockStatus:'unknown', sessionToken:null };
     const walletData = { balance:Number(localStorage.getItem('lezCoins')||12450), rewards:['+750 Golden Rain Zombies','+300 Daily login','+120 Crypt Flap run'] };
     const quests=[{name:'Play 3 games',current:1,target:3,reward:300},{name:'Earn 1,000 coins',current:420,target:1000,reward:500},{name:'Win 2 beta rounds',current:0,target:2,reward:700},{name:'Play a weird game',current:1,target:1,reward:250}];
     const leaderboardData=[{user:'X_WEIRDKING_X',score:998120},{user:'EGGSLAYER69',score:864010},{user:'Z0MB13_LORD',score:802400},{user:'PUZZLE_GURU',score:755920},{user:'LEZ_MASTER (YOU)',score:733700,you:true}];
-    const storeItems=[{name:'Neon Skull Mask',rarity:'Rare',price:1800,icon:'☠'},{name:'Glitch Umbrella',rarity:'Epic',price:3200,icon:'☂'},{name:'Toxic Backpack',rarity:'Rare',price:2400,icon:'🎒'},{name:'Cyber Egg',rarity:'Legendary',price:8000,icon:'🥚'},{name:'Death Banner',rarity:'Epic',price:4100,icon:'⚑'}];
+    const storeItems=[{name:'Void Skull Mask',rarity:'Rare',price:1800,icon:'☠'},{name:'Glitch Umbrella',rarity:'Epic',price:3200,icon:'☂'},{name:'Toxic Backpack',rarity:'Rare',price:2400,icon:'🎒'},{name:'Cyber Egg',rarity:'Premium',price:8000,icon:'🥚'},{name:'Death Banner',rarity:'Epic',price:4100,icon:'⚑'}];
     const state={filter:'All',sort:'popular',search:'',wishlist:new Set(JSON.parse(localStorage.getItem('wishlist')||'[]')),activeSession:null,paused:false,lastPostGame:null};
     const $=s=>document.querySelector(s); const $$=s=>document.querySelectorAll(s); const bySlug=slug=>games.find(g=>g.slug===slug); const homeHTML=document.querySelector('main').innerHTML;
     function route(path){ history.pushState(null,'',path); renderRoute(); }
     function currentRoute(){ return location.pathname !== '/' ? location.pathname : (location.hash.replace(/^#/,'') || '/'); }
-    function toast(msg,bad=false){ const t=document.createElement('div'); t.className='toast'; t.style.borderColor=bad?'var(--red)':'var(--cyan)'; t.textContent=msg; $('#toastbox').appendChild(t); setTimeout(()=>t.remove(),3200); }
+    function toast(msg,bad=false){ const t=document.createElement('div'); t.className='toast'; t.style.borderColor=bad?'var(--danger)':'var(--brand-primary)'; t.textContent=msg; $('#toastbox').appendChild(t); setTimeout(()=>t.remove(),3200); }
     function statusLabel(g){ return g.status==='coming_soon'?'COMING SOON':g.status.toUpperCase(); }
     function rewardText(g){ return `${g.rewardRules.baseCoins} LC base · ${g.rewardRules.bonus}`; }
-    function updateWallet(){ userContext.walletBalance=walletData.balance; $('#walletBalance').textContent=walletData.balance.toLocaleString(); $('#walletUsd').textContent=(walletData.balance/1000).toFixed(2); localStorage.setItem('lezCoins',walletData.balance); }
+    function updateWallet(){ userContext.walletBalance=walletData.balance; $('#walletBalance').textContent=walletData.balance.toLocaleString(); $('#walletUsd').textContent='Internal credits only'; localStorage.setItem('lezCoins',walletData.balance); }
     function gameCard(g){ return `<article class="card"><button class="wishlist ${state.wishlist.has(g.id)?'active':''}" data-wish="${g.id}">♥</button><a href="/games/${g.slug}" class="thumb"><span>${g.thumbnail}<br>${g.gameType.toUpperCase()}</span></a><span class="badge-status ${g.status.replace('_','-')}">${statusLabel(g)}</span><h3>${g.title}</h3><div class="tags">${g.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><p class="meta">${g.shortDescription}</p><p><b>${rewardText(g)}</b></p><p class="meta">${g.supportedDevices} · ${g.category} · ${g.releaseDate}</p><div class="cta"><button class="btn" data-play-slug="${g.slug}">${g.isPlayable?'Play':'Preview'}</button><a class="btn dark" href="/games/${g.slug}">Details</a></div></article>`; }
     function filteredGames(){ let list=games.filter(g=>state.filter==='All'||g.category===state.filter||g.tags.includes(state.filter)||g.status===state.filter); if(state.search) list=list.filter(g=>(g.title+' '+g.tags.join(' ')+' '+g.shortDescription).toLowerCase().includes(state.search)); return list.sort((a,b)=>state.sort==='name'?a.title.localeCompare(b.title):state.sort==='newest'?new Date(b.releaseDate)-new Date(a.releaseDate):state.sort==='reward'?(b.rewardRules.baseCoins-a.rewardRules.baseCoins):Number(b.isPlayable)-Number(a.isPlayable)); }
     function renderFilters(){ const filters=['All','Arcade','Survival','Puzzle','Runner','coming_soon','weird']; $('#filters').innerHTML=filters.map(f=>`<button class="btn ${state.filter===f?'':'dark'}" data-filter="${f}">${f.replace('_',' ')}</button>`).join(''); }
     function renderCatalog(){ renderFilters(); $('#gamesGrid').innerHTML=filteredGames().map(gameCard).join(''); }
-    function renderCommon(){ updateWallet(); $('#recentRewards').innerHTML=walletData.rewards.map(r=>`<div class="reward-row"><span>▣</span><span>${r}</span><span>LC</span></div>`).join(''); $('#streakDots').innerHTML=Array.from({length:7},(_,i)=>`<span class="dot ${i<5?'done':''}"></span>`).join(''); $('#questsList').innerHTML=quests.map(q=>`<div class="quest"><span>${q.current>=q.target?'☑':'☐'}</span><div><b>${q.name}</b><div class="progress"><span style="width:${Math.min(100,q.current/q.target*100)}%"></span></div><span class="meta">${q.current}/${q.target}</span></div><b>${q.reward} LC</b></div>`).join(''); $('#leaderboard').innerHTML=leaderboardData.map((u,i)=>`<div class="leader-row ${u.you?'you':''}"><b>#${i+1}</b><span>${u.user}</span><b>${u.score.toLocaleString()}</b></div>`).join(''); $('#storeGrid').innerHTML=storeItems.map((it,i)=>`<article class="card"><div class="store-icon">${it.icon}</div><h3>${it.name}</h3><p class="meta">${it.rarity}</p><b>${it.price.toLocaleString()} LC</b><button class="btn" data-buy-item="${i}" style="margin-top:10px">Buy</button></article>`).join(''); $('#statOnline').textContent=games.filter(g=>g.isPlayable).length.toString(); renderCatalog(); $('#upcomingGrid').innerHTML=games.filter(g=>g.status==='coming_soon').map(gameCard).join(''); }
+    function renderCommon(){ updateWallet(); $('#recentRewards').innerHTML=walletData.rewards.map(r=>`<div class="reward-row"><span>▣</span><span>${r}</span><span>LC</span></div>`).join(''); $('#streakDots').innerHTML=Array.from({length:7},(_,i)=>`<span class="dot ${i<5?'done':''}"></span>`).join(''); $('#questsList').innerHTML=quests.map(q=>`<div class="quest"><span>${q.current>=q.target?'☑':'☐'}</span><div><b>${q.name}</b><div class="progress"><span style="width:${Math.min(100,q.current/q.target*100)}%"></span></div><span class="meta">${q.current}/${q.target}</span></div><b>${q.reward} LC</b></div>`).join(''); $('#leaderboard').innerHTML=leaderboardData.map((u,i)=>`<div class="leader-row ${u.you?'you':''}"><b>#${i+1}</b><span>${u.user}</span><b>${u.score.toLocaleString()}</b></div>`).join(''); $('#storeGrid').innerHTML=storeItems.map((it,i)=>`<article class="card"><div class="store-icon">${it.icon}</div><h3>${it.name}</h3><p class="meta">${it.rarity}</p><b>${it.price.toLocaleString()} LC</b><button class="btn warn" data-buy-item="${i}" style="margin-top:10px">Buy</button></article>`).join(''); $('#statOnline').textContent=games.filter(g=>g.isPlayable).length.toString(); renderCatalog(); $('#upcomingGrid').innerHTML=games.filter(g=>g.status==='coming_soon').map(gameCard).join(''); }
     function analyticsMock(event,payload={}){ console.log('[LEZGAMEZ analytics]', event, payload); }
     function deviceType(){ return matchMedia('(pointer:coarse)').matches || innerWidth<760 ? 'mobile' : 'desktop'; }
     function detectAdblock(){ return localStorage.getItem('lezAdblock')==='1'; }
@@ -247,18 +246,18 @@
     function shellState(game){ userContext.sessionToken=state.activeSession?.token||null; userContext.adblockStatus=detectAdblock()?'blocked':'clear'; return {...userContext, deviceType:deviceType(), gameConfig:game.gameConfig||{difficulty:'normal'}, game:{id:game.id,slug:game.slug,title:game.title}}; }
     function platformEvent(type,payload={}){ if(!GAME_EVENTS.includes(type)) return console.warn('Unknown game event',type,payload); analyticsMock(type,{sessionId:state.activeSession?.id,...payload}); if(type==='GAME_PAUSE') state.paused=true; if(type==='GAME_RESUME') state.paused=false; if(type==='GAME_OVER') showPostGame(payload); }
     function renderGamePage(g, play=false){ const mount=document.querySelector('main'); if(!play){ mount.innerHTML=`<section class="panel"><a class="pill" href="/games">← Catalog</a><div class="featured" style="margin-top:14px"><div class="game-frame"><span>${g.thumbnail}<br>GAME PAGE<br>${g.gameType.toUpperCase()}</span></div><div><h1 class="section-title">${g.title}</h1><span class="badge-status ${g.status.replace('_','-')}">${statusLabel(g)}</span><p class="subtitle">${g.fullDescription}</p><div class="tags">${g.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><p class="meta">Category: ${g.category} · Devices: ${g.supportedDevices} · Release: ${g.releaseDate}</p><p><b>Controls:</b> ${g.controls.mobile} / ${g.controls.desktop}</p><p><b>Rewards:</b> ${rewardText(g)}</p><p><b>Ads:</b> ${g.adRules.rewarded}</p><p><b>Store:</b> ${g.storeCompatibility.join(', ')}</p><div class="cta"><a class="btn" href="/play/${g.slug}">${g.isPlayable?'Play':'Preview'}</a></div></div></div></section>`; return; }
-      mount.innerHTML=`<section class="play-shell"><div id="shellLoading" class="shell-loading"><div class="loader-card"><div class="loader-logo">LEZGAMEZ</div><h1 class="section-title">${g.title}</h1><div class="neon-loader"><span></span></div><p class="tip-box" id="quickTip">Preparing sandbox...</p><p class="meta">Loading assets, wallet context, inventory, ads and session token.</p></div></div><div id="shellRuntime" class="panel" style="display:none"><div class="shell-toolbar"><div><a class="pill" href="/games">← Catalog</a></div><div class="meta"><b>${g.title}</b> · sandbox ${g.gameType} · session <span id="sessionId">pending</span></div><div class="cta" style="margin:0"><button class="btn dark" id="shellFullscreen">Fullscreen</button><button class="btn dark" id="shellPause">Pause</button><a class="btn warn" href="/games">Exit</a></div></div><div class="game-viewport" id="gameViewport"></div><pre id="gameShellCode"></pre></div></section>`;
+      mount.innerHTML=`<section class="play-shell"><div id="shellLoading" class="shell-loading"><div class="loader-card"><div class="loader-logo">LEZGAMEZ</div><h1 class="section-title">${g.title}</h1><div class="signal-loader"><span></span></div><p class="tip-box" id="quickTip">Preparing sandbox...</p><p class="meta">Loading assets, wallet context, inventory, ads and session token.</p></div></div><div id="shellRuntime" class="panel" style="display:none"><div class="shell-toolbar"><div><a class="pill" href="/games">← Catalog</a></div><div class="meta"><b>${g.title}</b> · sandbox ${g.gameType} · session <span id="sessionId">pending</span></div><div class="cta" style="margin:0"><button class="btn dark" id="shellFullscreen">Fullscreen</button><button class="btn dark" id="shellPause">Pause</button><a class="btn danger" href="/games">Exit</a></div></div><div class="game-viewport" id="gameViewport"></div><pre id="gameShellCode"></pre></div></section>`;
       startShell(g); }
     function startShell(game){ analyticsMock('game_start',{slug:game.slug}); state.activeSession=createSession(game); const tips=game.quickTips||['Collect coins wisely.','Scores are validated by backend.']; let i=0; const tip=$('#quickTip'); tip.textContent=tips[0]; const timer=setInterval(()=>{ tip.textContent=tips[++i%tips.length]; },850); setTimeout(()=>{ clearInterval(timer); if(detectAdblock()){ $('#shellRuntime').style.display='block'; $('#shellLoading').style.display='none'; mountGame(game,'#gameViewport',true); $('#adblockOverlay').classList.add('open'); analyticsMock('game_blocked_adblock',{slug:game.slug}); return; } $('#shellLoading').style.display='none'; $('#shellRuntime').style.display='block'; $('#sessionId').textContent=state.activeSession.id; mountGame(game,'#gameViewport',true); platformEvent('GAME_READY',{state:shellState(game)}); platformEvent('GAME_START',{slug:game.slug}); },1400); }
     // SECURITY: client events are UX signals only. Backend must validate sessionToken, score proofs, anti-cheat signals and coin grants.
     // Games receive wallet context but must never be allowed to mutate the wallet directly.
     function mountGame(game, target='#shellStage', shell=false){ const stage=$(target); if(!stage) return; const context=shellState(game); let mount=''; if(game.externalUrl){ mount=`<iframe sandbox="allow-scripts allow-pointer-lock allow-forms" referrerpolicy="no-referrer" src="${game.externalUrl}" title="${game.title}"></iframe>`; } else if(game.gameType==='iframe' && game.shellMode!=='placeholder'){ mount=`<iframe sandbox="allow-scripts allow-pointer-lock" referrerpolicy="no-referrer" src="${game.gameUrl}" title="${game.title}"></iframe>`; } else if(game.gameType==='canvas' && game.shellMode!=='placeholder'){ mount='<canvas id="lezGameCanvas" width="1280" height="720"></canvas>'; } else { mount=`<div class="game-placeholder"><div class="big">${game.thumbnail}</div><h2>${game.title}</h2><p class="meta">Placeholder activo: build real pendiente en ${game.gameUrl}</p><button class="btn" id="mockGameOver">Simulate Game Over</button></div>`; }
-      stage.innerHTML=mount+`<div class="pause-overlay" id="pauseOverlay"><div class="result-card"><h2 class="section-title">Paused</h2><p>Session frozen safely.</p><button class="btn" id="resumeBtn">Resume</button></div></div><div class="adblock-overlay" id="adblockOverlay"><div class="result-card"><h2 class="section-title">Adblock detected</h2><p class="meta">Disable adblock to play monetized sessions. This protects reward economy and ad eligibility.</p><a class="btn warn" href="/games">Back to catalog</a></div></div><div class="post-game" id="postGame"></div>`;
+      stage.innerHTML=mount+`<div class="pause-overlay" id="pauseOverlay"><div class="result-card"><h2 class="section-title">Paused</h2><p>Session frozen safely.</p><button class="btn" id="resumeBtn">Resume</button></div></div><div class="adblock-overlay" id="adblockOverlay"><div class="result-card"><h2 class="section-title">Adblock detected</h2><p class="meta">Disable adblock to play monetized sessions. This protects reward economy and ad eligibility.</p><a class="btn danger" href="/games">Back to catalog</a></div></div><div class="post-game" id="postGame"></div>`;
       $('#gameShellCode').textContent=`// Shell context passed to game
 ${JSON.stringify(context,null,2)}
 
 // SECURITY: never trust client score/coins. Backend must validate sessionToken, score proofs, anti-cheat and coin grants. Games cannot modify wallet directly.`; }
-    function showPostGame(payload={}){ const score=payload.score||Math.floor(50000+Math.random()*250000); const best=Math.max(score,733700); const coins=payload.coins||Math.floor(score/1000); state.lastPostGame={score,best,coins}; const pg=$('#postGame'); if(!pg) return; pg.innerHTML=`<div class="result-card"><h2 class="section-title">GAME OVER</h2><div class="score-grid"><div><b>Final Score</b><div class="wallet-balance">${score.toLocaleString()}</div></div><div><b>Best Personal</b><div class="wallet-balance">${best.toLocaleString()}</div></div><div><b>Coins Earned</b><div class="wallet-balance">${coins} LC</div></div></div><p class="meta">Ranking mock. Backend must validate score and coin grant before wallet update.</p><div id="postLeaderboard">${leaderboardData.slice(0,4).map((u,i)=>`<div class="leader-row"><b>#${i+1}</b><span>${u.user}</span><b>${u.score.toLocaleString()}</b></div>`).join('')}</div><div class="cta"><button class="btn" id="retryBtn">Retry</button><a class="btn dark" href="/leaderboards">Leaderboard</a><button class="btn alt" id="recommendedStore">Store item: Glitch Umbrella</button><a class="btn warn" href="/play/crypt-flap">Next weird game</a><a class="btn dark" href="/games">Catalog</a></div></div>`; pg.classList.add('open'); analyticsMock('game_over',{score,coins}); }
+    function showPostGame(payload={}){ const score=payload.score||Math.floor(50000+Math.random()*250000); const best=Math.max(score,733700); const coins=payload.coins||Math.floor(score/1000); state.lastPostGame={score,best,coins}; const pg=$('#postGame'); if(!pg) return; pg.innerHTML=`<div class="result-card"><h2 class="section-title">GAME OVER</h2><div class="score-grid"><div><b>Final Score</b><div class="wallet-balance">${score.toLocaleString()}</div></div><div><b>Best Personal</b><div class="wallet-balance">${best.toLocaleString()}</div></div><div><b>Coins Earned</b><div class="wallet-balance">${coins} LC</div></div></div><p class="meta">Ranking mock. Backend must validate score and coin grant before wallet update.</p><div id="postLeaderboard">${leaderboardData.slice(0,4).map((u,i)=>`<div class="leader-row"><b>#${i+1}</b><span>${u.user}</span><b>${u.score.toLocaleString()}</b></div>`).join('')}</div><div class="cta"><button class="btn" id="retryBtn">Retry</button><a class="btn dark" href="/leaderboards">Leaderboard</a><button class="btn alt" id="recommendedStore">Store item: Glitch Umbrella</button><a class="btn dark" href="/play/crypt-flap">Next weird game</a><a class="btn dark" href="/games">Catalog</a></div></div>`; pg.classList.add('open'); analyticsMock('game_over',{score,coins}); }
     function openGame(g){ if(g) route('/play/'+g.slug); }
     function restoreHome(){ const main=document.querySelector('main'); if(!main.querySelector('#gamesGrid')){ main.innerHTML=homeHTML; renderCommon(); bindPageControls(); } }
     function renderRoute(){ const path=currentRoute(); const parts=path.split('/').filter(Boolean); if(parts[0]==='games'&&parts[1]) return renderGamePage(bySlug(parts[1])||games[0]); if(parts[0]==='play'&&parts[1]) return renderGamePage(bySlug(parts[1])||games[0],true); restoreHome(); if(parts[0]==='games'){ document.getElementById('games').scrollIntoView(); return; } if(parts[0]&&['store','wallet','inventory','leaderboards','profile','challenges','upcoming'].includes(parts[0])){ document.getElementById(parts[0]==='leaderboards'?'rankings':parts[0]==='challenges'?'quests':parts[0]).scrollIntoView(); } }
