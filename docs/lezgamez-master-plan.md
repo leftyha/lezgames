@@ -12,7 +12,7 @@
 
 **Descripción corta:** LezGamez será una plataforma web mobile-first de juegos HTML5 arcade raros, rápidos y virales, organizada como ecosistema común con Game Shell, Game SDK, wallet interna, tienda, inventario, rankings, quests, anuncios, analytics, SEO y admin.
 
-* [ ] Definir LezGamez como plataforma, no como colección suelta de juegos.
+* [x] Definir LezGamez como plataforma, no como colección suelta de juegos.
   * Prioridad: MVP
   * Depende de: visión de producto, arquitectura técnica, catálogo de juegos.
   * Criterio de aceptación: todo juego live se lanza desde `/play/:slug`, existe en `/games/:slug` y usa Game SDK.
@@ -37,7 +37,7 @@
 
 **Descripción corta:** Lanzar una versión navegable, indexable, monetizable y medible, con juegos rápidos que funcionen en móvil.
 
-* [ ] Construir plataforma navegable con Home, catálogo, páginas SEO, play, store, wallet, inventory, leaderboards, quests, legal y admin mínimo.
+* [x] Construir plataforma navegable con Home, catálogo, páginas SEO, play, store, wallet, inventory, leaderboards, quests, legal y admin mínimo.
   * Prioridad: MVP
   * Depende de: Next.js, diseño, rutas.
   * Criterio de aceptación: todas las rutas críticas cargan sin errores 500 y tienen navegación clara.
@@ -85,7 +85,7 @@
 
 **Descripción corta:** LezGamez debe sentirse como un universo arcade oscuro, extraño y premium donde cada partida es instantánea, compartible y rejugable.
 
-* [ ] Diseñar pilares: rareza, rapidez, brutalismo visual, mobile-first, ranking inmediato y recompensas internas.
+* [x] Diseñar pilares: rareza, rapidez, brutalismo visual, mobile-first, ranking inmediato y recompensas internas.
   * Prioridad: MVP
   * Depende de: design system, game guidelines.
   * Criterio de aceptación: cada juego se evalúa contra esos pilares antes de entrar al catálogo.
@@ -132,15 +132,15 @@
 }
 ```
 
-* [ ] Crear tokens de color, tipografía, spacing, radius, shadow y motion.
+* [x] Crear tokens de color, tipografía, spacing, radius, shadow y motion.
   * Prioridad: MVP
   * Depende de: paleta estricta.
   * Criterio de aceptación: no existen colores fuera de tokens salvo arte interno de juegos.
-* [ ] Aplicar proporción visual 85% oscuro, 10% estructura/muted, 4% violet, 1% amber/red/green.
+* [x] Aplicar proporción visual 85% oscuro, 10% estructura/muted, 4% violet, 1% amber/red/green.
   * Prioridad: MVP
   * Depende de: componentes base.
   * Criterio de aceptación: auditoría UI confirma que violet solo destaca Play, activos, scores importantes e items destacados.
-* [ ] Usar Space Grotesk o Rajdhani para display, Inter para body y JetBrains Mono para scores, monedas, timers y ranks.
+* [x] Usar Space Grotesk o Rajdhani para display, Inter para body y JetBrains Mono para scores, monedas, timers y ranks.
   * Prioridad: MVP
   * Depende de: carga de fuentes.
   * Criterio de aceptación: componentes de score/ranking/wallet usan mono.
@@ -148,7 +148,7 @@
   * Prioridad: MVP
   * Depende de: revisión UX/UI.
   * Criterio de aceptación: PR visual se bloquea si introduce cyan/lime/multicolor cards o glow excesivo.
-* [ ] Diseñar componentes: header, game card, Play button, wallet pill, rank row, quest card, store item, admin table, ad placeholder.
+* [x] Diseñar componentes: header, game card, Play button, wallet pill, rank row, quest card, store item, admin table, ad placeholder.
   * Prioridad: MVP
   * Depende de: tokens.
   * Criterio de aceptación: todas las rutas MVP reutilizan componentes del sistema.
@@ -161,15 +161,15 @@
 
 **Descripción corta:** Monorepo con plataforma separada de juegos, API central, base de datos relacional, cache y CDN/WAF.
 
-* [ ] Estructurar monorepo con pnpm y Turborepo.
+* [x] Estructurar monorepo con pnpm y Turborepo.
   * Prioridad: MVP
   * Depende de: decisión de stack.
   * Criterio de aceptación: existen apps separadas para web, api y juegos con scripts unificados.
-* [ ] Definir frontend plataforma con Next.js, React y TypeScript.
+* [x] Definir frontend plataforma con Next.js, React y TypeScript.
   * Prioridad: MVP
   * Depende de: design system, rutas.
   * Criterio de aceptación: páginas SEO renderizan contenido sin depender de client-side JS.
-* [ ] Definir backend/API con NestJS y TypeScript.
+* [x] Definir backend/API con NestJS y TypeScript.
   * Prioridad: MVP
   * Depende de: módulos backend.
   * Criterio de aceptación: API expone endpoints versionados para juegos, sesiones, scores, wallet, store, ads, analytics y admin.
@@ -238,15 +238,15 @@
 
 **Descripción corta:** Separar rutas SEO indexables de rutas funcionales de juego/plataforma.
 
-* [ ] Implementar rutas SEO: `/`, `/games`, `/games/:slug`, `/weird-games`, `/zombie-games`, `/egg-games`, `/arcade-games`, `/puzzle-games`, `/io-games`, `/physics-games`, `/no-download-games`.
+* [x] Implementar rutas SEO: `/`, `/games`, `/games/:slug`, `/weird-games`, `/zombie-games`, `/egg-games`, `/arcade-games`, `/puzzle-games`, `/io-games`, `/physics-games`, `/no-download-games`.
   * Prioridad: MVP
   * Depende de: catálogo, SEO.
   * Criterio de aceptación: cada ruta tiene H1, copy server-rendered, links internos y metadata.
-* [ ] Implementar rutas plataforma: `/play/:slug`, `/store`, `/wallet`, `/inventory`, `/leaderboards`, `/profile/:username`, `/daily-challenges`, `/weekly-challenges`.
+* [x] Implementar rutas plataforma: `/play/:slug`, `/store`, `/wallet`, `/inventory`, `/leaderboards`, `/profile/:username`, `/daily-challenges`, `/weekly-challenges`.
   * Prioridad: MVP
   * Depende de: Game Shell, store, wallet, leaderboards.
   * Criterio de aceptación: usuario puede jugar, revisar progreso y volver al catálogo desde móvil.
-* [ ] Implementar rutas legales y soporte: `/privacy`, `/terms`, `/cookies`, `/contact`, `/support`.
+* [x] Implementar rutas legales y soporte: `/privacy`, `/terms`, `/cookies`, `/contact`, `/support`.
   * Prioridad: MVP
   * Depende de: textos legales.
   * Criterio de aceptación: footer enlaza todas las páginas legales.
@@ -261,19 +261,19 @@
 
 **Descripción corta:** El contenido indexable vive en páginas SEO reales; jugar ocurre en `/play/:slug`.
 
-* [ ] Crear `/games/:slug` como página SEO real con descripción, How to play, FAQ, imágenes, related games y CTA Play.
+* [x] Crear `/games/:slug` como página SEO real con descripción, How to play, FAQ, imágenes, related games y CTA Play.
   * Prioridad: MVP
   * Depende de: modelo de catálogo.
   * Criterio de aceptación: el HTML inicial contiene contenido principal sin depender de JS cliente.
-* [ ] Reservar `/play/:slug` solo para Game Shell, no para posicionamiento principal.
+* [x] Reservar `/play/:slug` solo para Game Shell, no para posicionamiento principal.
   * Prioridad: MVP
   * Depende de: rutas, Game Shell.
   * Criterio de aceptación: página play tiene canonical hacia `/games/:slug` cuando aplique.
-* [ ] Generar sitemap.xml y robots.txt.
+* [x] Generar sitemap.xml y robots.txt.
   * Prioridad: MVP
   * Depende de: rutas live, status de juegos.
   * Criterio de aceptación: sitemap incluye rutas SEO live y excluye admin.
-* [ ] Crear metadata por juego: seoTitle, seoDescription, Open Graph y Twitter/X cards.
+* [x] Crear metadata por juego: seoTitle, seoDescription, Open Graph y Twitter/X cards.
   * Prioridad: MVP
   * Depende de: ogImage, catálogo.
   * Criterio de aceptación: cada juego live tiene title único y OG image.
@@ -281,7 +281,7 @@
   * Prioridad: Post-MVP
   * Depende de: i18n.
   * Criterio de aceptación: un juego mantiene title original y traduce shortDescription/fullDescription/FAQ.
-* [ ] Crear categorías SEO con copy único y enlaces a juegos relacionados.
+* [x] Crear categorías SEO con copy único y enlaces a juegos relacionados.
   * Prioridad: MVP
   * Depende de: tags/category.
   * Criterio de aceptación: cada categoría muestra mínimo 4 juegos live/beta/coming soon relevantes.
@@ -292,23 +292,23 @@
 
 **Descripción corta:** Catálogo central que define estado, SEO, compatibilidad, rewards, ads y relación con Game Shell.
 
-* [ ] Definir modelo GameCatalog con id, title, slug, status, shortDescription, fullDescription, category, tags, thumbnail, ogImage.
+* [x] Definir modelo GameCatalog con id, title, slug, status, shortDescription, fullDescription, category, tags, thumbnail, ogImage.
   * Prioridad: MVP
   * Depende de: GamesModule.
   * Criterio de aceptación: cada juego aparece correctamente en home, catálogo y página SEO.
-* [ ] Añadir isPlayable, gameUrl, gameType, supportedDevices y controls.
+* [x] Añadir isPlayable, gameUrl, gameType, supportedDevices y controls.
   * Prioridad: MVP
   * Depende de: Game Shell.
   * Criterio de aceptación: Play solo aparece si isPlayable=true y device compatible.
-* [ ] Añadir rewardRules, adRules y storeCompatibility.
+* [x] Añadir rewardRules, adRules y storeCompatibility.
   * Prioridad: MVP
   * Depende de: Wallet, Store, Ads.
   * Criterio de aceptación: backend calcula monedas y ad breaks según reglas por juego.
-* [ ] Añadir releaseDate, seoTitle, seoDescription, faq y relatedGames.
+* [x] Añadir releaseDate, seoTitle, seoDescription, faq y relatedGames.
   * Prioridad: MVP
   * Depende de: SEO.
   * Criterio de aceptación: sitemap y páginas SEO se generan desde el catálogo.
-* [ ] Crear estado live / beta / coming_soon.
+* [x] Crear estado live / beta / coming_soon.
   * Prioridad: MVP
   * Depende de: admin.
   * Criterio de aceptación: admin puede cambiar estado y afectar visibilidad.
@@ -319,19 +319,19 @@
 
 **Descripción corta:** Contenedor común de ejecución que controla Play, adblock, sesión, SDK, UI post-game, retry y navegación.
 
-* [ ] Crear loader LezGamez con estado loading, error y timeout.
+* [x] Crear loader LezGamez con estado loading, error y timeout.
   * Prioridad: MVP
   * Depende de: design system.
   * Criterio de aceptación: usuario ve feedback si el juego tarda o falla.
-* [ ] Crear pantalla Play previa que no carga el juego hasta pulsar Play.
+* [x] Crear pantalla Play previa que no carga el juego hasta pulsar Play.
   * Prioridad: MVP
   * Depende de: performance, adblock.
   * Criterio de aceptación: assets del juego no se descargan antes de Play.
-* [ ] Validar adblock antes de iniciar.
+* [x] Validar adblock antes de iniciar.
   * Prioridad: MVP
   * Depende de: AdsModule.
   * Criterio de aceptación: si hay adblock, se bloquea Play con: “Adblock detected. LezGamez is free because ads keep the games online. Please disable your adblocker to play.”
-* [ ] Soportar iframe sandbox y canvas.
+* [x] Soportar iframe sandbox y canvas.
   * Prioridad: MVP
   * Depende de: gameType.
   * Criterio de aceptación: juegos iframe no pueden escapar del shell y juegos canvas reciben contexto SDK.
@@ -381,7 +381,7 @@
 
 **Descripción corta:** Lez Coins son créditos internos sin valor monetario real ni retiro. La wallet es server-side.
 
-* [ ] Mostrar disclaimer permanente: Lez Coins are internal credits only and cannot be withdrawn, sold, transferred or exchanged for real money.
+* [x] Mostrar disclaimer permanente: Lez Coins are internal credits only and cannot be withdrawn, sold, transferred or exchanged for real money.
   * Prioridad: MVP
   * Depende de: legal, wallet UI.
   * Criterio de aceptación: disclaimer visible en wallet, store, terms y reward modals.
@@ -406,7 +406,7 @@
 
 **Descripción corta:** Tienda de cosméticos, skins y efectos compatibles por juego, conectada con inventario.
 
-* [ ] Crear store con categorías: skins, trails, hit effects, profile badges, frames y seasonal items.
+* [x] Crear store con categorías: skins, trails, hit effects, profile badges, frames y seasonal items.
   * Prioridad: MVP
   * Depende de: store_items, design system.
   * Criterio de aceptación: tienda puede filtrar por compatibilidad de juego.
@@ -599,23 +599,23 @@
 
 **Descripción corta:** Legal mínimo para operar plataforma con ads, analytics, cuentas, cookies y créditos internos.
 
-* [ ] Crear Privacy Policy.
+* [x] Crear Privacy Policy.
   * Prioridad: MVP
   * Depende de: analytics, ads, auth.
   * Criterio de aceptación: explica datos recolectados, finalidad, proveedores y contacto.
-* [ ] Crear Terms of Use con regla de Lez Coins sin valor real.
+* [x] Crear Terms of Use con regla de Lez Coins sin valor real.
   * Prioridad: MVP
   * Depende de: wallet, store.
   * Criterio de aceptación: términos declaran que créditos no se retiran, venden, transfieren ni cambian por dinero.
-* [ ] Crear Cookie Policy y cookie banner.
+* [x] Crear Cookie Policy y cookie banner.
   * Prioridad: MVP
   * Depende de: ads/analytics.
   * Criterio de aceptación: usuario ve consentimiento para ads/analytics según región.
-* [ ] Crear Contact y Support.
+* [x] Crear Contact y Support.
   * Prioridad: MVP
   * Depende de: soporte.
   * Criterio de aceptación: usuarios pueden reportar problemas legales, cuenta, ads o compras.
-* [ ] Añadir explicación de gameplay ad-supported.
+* [x] Añadir explicación de gameplay ad-supported.
   * Prioridad: MVP
   * Depende de: adblock gate.
   * Criterio de aceptación: bloqueo por adblock explica que ads mantienen los juegos online.
@@ -626,7 +626,7 @@
 
 **Descripción corta:** Móvil es obligatorio. Desktop puede mejorar la experiencia, pero ningún juego debe requerir teclado.
 
-* [ ] Diseñar todos los flujos con viewport móvil como base.
+* [x] Diseñar todos los flujos con viewport móvil como base.
   * Prioridad: MVP
   * Depende de: design system.
   * Criterio de aceptación: home, catálogo, play, store y wallet son usables con una mano.
@@ -642,7 +642,7 @@
   * Prioridad: MVP
   * Depende de: R2/CDN.
   * Criterio de aceptación: assets tienen compresión y caching.
-* [ ] Reducir animaciones pesadas y soportar reduced motion.
+* [x] Reducir animaciones pesadas y soportar reduced motion.
   * Prioridad: MVP
   * Depende de: UI.
   * Criterio de aceptación: usuarios con reduced motion ven transiciones reducidas.

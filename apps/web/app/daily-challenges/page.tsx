@@ -1,0 +1,1 @@
+export default function Daily(){return <main><h1>Daily challenges</h1>{['Play 3 runs','Reach one target score','Try a new game','Claim validated reward'].map(x=><div className="panel" key={x}><h2>{x}</h2><p className="muted">Quest progress is driven by validated SDK events.</p></div>)}</main>}

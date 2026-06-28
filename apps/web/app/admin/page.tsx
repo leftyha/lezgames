@@ -1,0 +1,1 @@
+export default function Admin(){return <main><h1>Admin</h1><section className="panel admin-lock"><h2>Protected backoffice placeholder</h2><p className="muted">Catalog, ads, quests, store, bugs and analytics are represented as module contracts in the API scaffold.</p></section></main>}

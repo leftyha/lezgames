@@ -1,0 +1,1 @@
+export default function Leaderboards(){return <main><h1>Leaderboards</h1>{['Daily','Weekly','All-time'].map((t,i)=><section className="panel" key={t}><h2>{t}</h2>{[1,2,3].map(r=><div className="row" key={r}><b>#{r}</b><span>LEZ_PLAYER_{r}</span><b>{99999-r*i*321}</b></div>)}</section>)}</main>}
