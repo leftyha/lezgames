@@ -1,0 +1,1 @@
+export default async function Profile({params}:{params:Promise<{username:string}>}){const {username}=await params;return <main><h1>Profile: {username}</h1><p className="muted">Badges, best scores and equipped cosmetics.</p></main>}

@@ -1,0 +1,1 @@
+export default function Inventory(){return <main><h1>Inventory</h1><div className="grid">{['skins','trails','hit effects','profile badges','frames','seasonal'].map(x=><article className="card" key={x}><h2>{x}</h2><p className="muted">Owned and equipped compatibility placeholder.</p></article>)}</div></main>}

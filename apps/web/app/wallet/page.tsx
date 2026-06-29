@@ -1,0 +1,1 @@
+import { Disclaimer } from '@lezgamez/ui';export default function Wallet(){return <main><h1>Wallet</h1><Disclaimer/><section className="panel"><h2 className="mono">12,450 LC</h2><p className="muted">Server-prepared wallet ledger: rewards, purchases, admin grants and reversals require backend validation.</p></section></main>}

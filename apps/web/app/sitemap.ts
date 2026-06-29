@@ -1,0 +1,2 @@
+import { games } from '@lezgamez/catalog';
+export default function sitemap(){const base='https://lezgamez.com';return ['','/games','/store','/wallet','/inventory','/leaderboards','/privacy','/terms','/cookies','/contact','/support','/weird-games','/zombie-games','/egg-games','/arcade-games','/puzzle-games','/io-games','/physics-games','/no-download-games',...games.map(g=>`/games/${g.slug}`)].map(url=>({url:base+url,lastModified:new Date('2026-06-28')}))}
