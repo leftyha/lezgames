@@ -335,11 +335,11 @@
   * Prioridad: MVP
   * Depende de: gameType.
   * Criterio de aceptación: juegos iframe no pueden escapar del shell y juegos canvas reciben contexto SDK.
-* [ ] Añadir fullscreen, pause, retry, exit to catalog y mobile layout.
+* [x] Añadir fullscreen, pause, retry, exit to catalog y mobile layout.
   * Prioridad: MVP
   * Depende de: UI shell.
   * Criterio de aceptación: controles no pisan gameplay ni anuncios.
-* [ ] Crear post-game screen con score final, best score, coins earned, leaderboard y recommended next game.
+* [x] Crear post-game screen con score final, best score, coins earned, leaderboard y recommended next game.
   * Prioridad: MVP
   * Depende de: Scores, Wallet, catálogo.
   * Criterio de aceptación: tras game over se puede reintentar en menos de 2 segundos.
@@ -350,27 +350,27 @@
 
 **Descripción corta:** Contrato común entre juegos y plataforma. El juego reporta eventos; backend valida resultados.
 
-* [ ] Implementar eventos/métodos: ready(), startGame(), pauseGame(), resumeGame(), gameOver({ score, reason }), levelComplete({ level, score }).
+* [x] Implementar eventos/métodos: ready(), startGame(), pauseGame(), resumeGame(), gameOver({ score, reason }), levelComplete({ level, score }).
   * Prioridad: MVP
   * Depende de: Game Shell.
   * Criterio de aceptación: el shell conoce el estado de cada partida.
-* [ ] Implementar submitScore({ score, checksum }) y validación server-side.
+* [x] Implementar submitScore({ score, checksum }) y validación server-side.
   * Prioridad: MVP
   * Depende de: ScoresModule, AntiCheatModule.
   * Criterio de aceptación: scores sin launchSessionId o checksum inválido se rechazan.
-* [ ] Implementar coinsEarned({ amount, reason }) como solicitud, no decisión final.
+* [x] Implementar coinsEarned({ amount, reason }) como solicitud, no decisión final.
   * Prioridad: MVP
   * Depende de: WalletModule, RewardsModule.
   * Criterio de aceptación: backend recalcula y confirma monedas.
-* [ ] Implementar requestAdBreak({ reason }) y requestReward({ type }).
+* [x] Implementar requestAdBreak({ reason }) y requestReward({ type }).
   * Prioridad: MVP
   * Depende de: AdsModule, RewardsModule.
   * Criterio de aceptación: ad break solo ocurre en pausas naturales aprobadas.
-* [ ] Implementar getInventory(), getEquippedItems() y reportBug().
+* [x] Implementar getInventory(), getEquippedItems() y reportBug().
   * Prioridad: MVP
   * Depende de: InventoryModule, bug_reports.
   * Criterio de aceptación: juegos pueden adaptar cosméticos y reportar errores con session context.
-* [ ] Pasar al juego userId, language, deviceType, walletBalance, inventory, equippedItems, adStatus, adblockStatus, sessionToken, launchSessionId y gameConfig.
+* [x] Pasar al juego userId, language, deviceType, walletBalance, inventory, equippedItems, adStatus, adblockStatus, sessionToken, launchSessionId y gameConfig.
   * Prioridad: MVP
   * Depende de: GameLaunchSessionsModule.
   * Criterio de aceptación: ningún juego inicia sin launchSessionId válido.
