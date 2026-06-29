@@ -1,3 +1,81 @@
-export type GameOverPayload = { score:number; reason:string; checksum?:string };
-export type LezGamezSDK = { ready():void; startGame():void; pauseGame():void; resumeGame():void; gameOver(payload:GameOverPayload):void; levelComplete(payload:{level:number;score:number}):void; submitScore(payload:{score:number;checksum:string}):Promise<{accepted:boolean}>; coinsEarned(payload:{amount:number;reason:string}):Promise<{confirmedAmount:number}>; requestAdBreak(payload:{reason:string}):Promise<{shown:boolean}>; requestReward(payload:{type:string}):Promise<{granted:boolean}>; reportBug(payload:{message:string}):void };
-export function createLezGamezSDK(post:(event:string,payload?:unknown)=>void): LezGamezSDK { return { ready:()=>post('ready'), startGame:()=>post('game_start'), pauseGame:()=>post('pause'), resumeGame:()=>post('resume'), gameOver:p=>post('game_over',p), levelComplete:p=>post('level_complete',p), submitScore:async p=>(post('score_submit',p),{accepted:true}), coinsEarned:async p=>(post('coins_earned',p),{confirmedAmount:p.amount}), requestAdBreak:async p=>(post('ad_opportunity',p),{shown:false}), requestReward:async p=>(post('reward_request',p),{granted:false}), reportBug:p=>post('bug_reported',p)}; }
+export type DeviceType = 'mobile' | 'desktop' | 'tablet' | 'unknown';
+export type AdblockStatus = 'unknown' | 'clear' | 'blocked';
+export type GameOverPayload = { score: number; reason: string; checksum?: string };
+export type InventoryItem = { id: string; type: string; equipped?: boolean; compatibleGames: string[] };
+export type EquippedItems = Record<string, InventoryItem | undefined>;
+export type GameConfig = Record<string, string | number | boolean | null>;
+export type LezGamezLaunchContext = {
+  userId: string;
+  language: string;
+  deviceType: DeviceType;
+  walletBalance: number;
+  inventory: InventoryItem[];
+  equippedItems: EquippedItems;
+  adStatus: 'ready' | 'cooldown' | 'unavailable';
+  adblockStatus: AdblockStatus;
+  sessionToken: string;
+  launchSessionId: string;
+  gameConfig: GameConfig;
+};
+export type SdkEvent =
+  | 'ready'
+  | 'game_start'
+  | 'pause'
+  | 'resume'
+  | 'game_over'
+  | 'level_complete'
+  | 'score_submit'
+  | 'coins_earned'
+  | 'ad_opportunity'
+  | 'reward_request'
+  | 'inventory_request'
+  | 'equipped_items_request'
+  | 'bug_reported';
+export type LezGamezSDK = {
+  context: LezGamezLaunchContext;
+  ready(): void;
+  startGame(): void;
+  pauseGame(): void;
+  resumeGame(): void;
+  gameOver(payload: GameOverPayload): void;
+  levelComplete(payload: { level: number; score: number }): void;
+  submitScore(payload: { score: number; checksum: string }): Promise<{ accepted: boolean; launchSessionId: string }>;
+  coinsEarned(payload: { amount: number; reason: string }): Promise<{ confirmedAmount: number; launchSessionId: string }>;
+  requestAdBreak(payload: { reason: string }): Promise<{ shown: boolean; launchSessionId: string }>;
+  requestReward(payload: { type: string }): Promise<{ granted: boolean; launchSessionId: string }>;
+  getInventory(): Promise<InventoryItem[]>;
+  getEquippedItems(): Promise<EquippedItems>;
+  reportBug(payload: { message: string }): void;
+};
+const defaultContext: LezGamezLaunchContext = {
+  userId: 'guest',
+  language: 'en',
+  deviceType: 'unknown',
+  walletBalance: 0,
+  inventory: [],
+  equippedItems: {},
+  adStatus: 'unavailable',
+  adblockStatus: 'unknown',
+  sessionToken: 'server-session-token-required',
+  launchSessionId: 'server-launch-session-required',
+  gameConfig: {},
+};
+export function createLezGamezSDK(post: (event: SdkEvent, payload?: unknown) => void, context: Partial<LezGamezLaunchContext> = {}): LezGamezSDK {
+  const launchContext = { ...defaultContext, ...context };
+  return {
+    context: launchContext,
+    ready: () => post('ready', { launchSessionId: launchContext.launchSessionId }),
+    startGame: () => post('game_start', { launchSessionId: launchContext.launchSessionId }),
+    pauseGame: () => post('pause', { launchSessionId: launchContext.launchSessionId }),
+    resumeGame: () => post('resume', { launchSessionId: launchContext.launchSessionId }),
+    gameOver: (payload) => post('game_over', { ...payload, launchSessionId: launchContext.launchSessionId }),
+    levelComplete: (payload) => post('level_complete', { ...payload, launchSessionId: launchContext.launchSessionId }),
+    submitScore: async (payload) => (post('score_submit', { ...payload, launchSessionId: launchContext.launchSessionId }), { accepted: true, launchSessionId: launchContext.launchSessionId }),
+    coinsEarned: async (payload) => (post('coins_earned', { ...payload, launchSessionId: launchContext.launchSessionId }), { confirmedAmount: payload.amount, launchSessionId: launchContext.launchSessionId }),
+    requestAdBreak: async (payload) => (post('ad_opportunity', { ...payload, launchSessionId: launchContext.launchSessionId }), { shown: false, launchSessionId: launchContext.launchSessionId }),
+    requestReward: async (payload) => (post('reward_request', { ...payload, launchSessionId: launchContext.launchSessionId }), { granted: false, launchSessionId: launchContext.launchSessionId }),
+    getInventory: async () => (post('inventory_request', { launchSessionId: launchContext.launchSessionId }), launchContext.inventory),
+    getEquippedItems: async () => (post('equipped_items_request', { launchSessionId: launchContext.launchSessionId }), launchContext.equippedItems),
+    reportBug: (payload) => post('bug_reported', { ...payload, launchSessionId: launchContext.launchSessionId }),
+  };
+}
