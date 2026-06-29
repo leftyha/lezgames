@@ -385,15 +385,15 @@
   * Prioridad: MVP
   * Depende de: legal, wallet UI.
   * Criterio de aceptación: disclaimer visible en wallet, store, terms y reward modals.
-* [ ] Crear wallet server-side por usuario.
+* [x] Crear wallet server-side por usuario.
   * Prioridad: MVP
   * Depende de: users, wallets.
   * Criterio de aceptación: balance nunca se calcula desde cliente.
-* [ ] Registrar wallet_transactions para rewards, purchases, admin grants y reversals.
+* [x] Registrar wallet_transactions para rewards, purchases, admin grants y reversals.
   * Prioridad: MVP
   * Depende de: WalletModule.
   * Criterio de aceptación: cada cambio de balance tiene reason, source y audit id.
-* [ ] Definir reglas de earning por juego con caps diarios.
+* [x] Definir reglas de earning por juego con caps diarios.
   * Prioridad: MVP
   * Depende de: rewardRules.
   * Criterio de aceptación: no se pueden farmear monedas infinitas por retry.
@@ -410,15 +410,15 @@
   * Prioridad: MVP
   * Depende de: store_items, design system.
   * Criterio de aceptación: tienda puede filtrar por compatibilidad de juego.
-* [ ] Crear inventory con items owned, equipped y compatibility.
+* [x] Crear inventory con items owned, equipped y compatibility.
   * Prioridad: MVP
   * Depende de: inventory_items.
   * Criterio de aceptación: el jugador equipa un item compatible y el SDK lo entrega al juego.
-* [ ] Bloquear compras si balance insuficiente o item incompatible.
+* [x] Bloquear compras si balance insuficiente o item incompatible.
   * Prioridad: MVP
   * Depende de: WalletModule, StoreModule.
   * Criterio de aceptación: compra se valida server-side y genera purchase + wallet_transaction.
-* [ ] Diseñar items destacados usando amber con glow-warm limitado.
+* [x] Diseñar items destacados usando amber con glow-warm limitado.
   * Prioridad: MVP
   * Depende de: design system.
   * Criterio de aceptación: la tienda no parece casino ni crypto.
