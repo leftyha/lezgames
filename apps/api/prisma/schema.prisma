@@ -41,6 +41,53 @@ enum StoreCategory {
   seasonal_items
 }
 
+enum AdminRole {
+  super_admin
+  admin
+  support
+}
+
+enum SessionStatus {
+  active
+  revoked
+  expired
+}
+
+enum LeaderboardPeriod {
+  daily
+  weekly
+  all_time
+}
+
+enum QuestCadence {
+  daily
+  weekly
+  seasonal
+}
+
+enum QuestStatus {
+  draft
+  active
+  archived
+}
+
+enum QuestProgressStatus {
+  in_progress
+  completed
+  claimed
+  expired
+}
+
+enum AdEventType {
+  opportunity
+  requested
+  started
+  completed
+  skipped
+  failed
+  blocked
+}
+
 model User {
   id                 String              @id @default(cuid())
   username           String              @unique
@@ -49,88 +96,170 @@ model User {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   wallet             Wallet?
+  adminUser          AdminUser?
+  sessions           Session[]
   launchSessions     GameLaunchSession[]
   scores             Score[]
+  leaderboardEntries LeaderboardEntry[]
   walletTransactions WalletTransaction[]
   inventoryItems     InventoryItem[]
   purchases          Purchase[]
   rewardCaps         RewardCap[]
+  rewardLedger       RewardLedger[]
   analyticsEvents    AnalyticsEvent[]
+  bugReports         BugReport[]
+  questProgress      QuestProgress[]
+  adEvents           AdEvent[]
+}
+
+model AdminUser {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  role      AdminRole @default(admin)
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([role])
+  @@index([active])
+}
+
+model Session {
+  id           String        @id @default(cuid())
+  userId       String
+  sessionToken String        @unique
+  status       SessionStatus @default(active)
+  userAgent    String?
+  ipHash       String?
+  expiresAt    DateTime
+  createdAt    DateTime      @default(now())
+  revokedAt    DateTime?
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, status])
+  @@index([expiresAt])
 }
 
 model Game {
-  id               String              @id @default(cuid())
-  slug             String              @unique
-  title            String
-  status           GameStatus
-  shortDescription String
-  fullDescription  String
-  category         String
-  tags             String[]
-  thumbnail        String
-  ogImage          String
-  isPlayable       Boolean             @default(false)
-  gameUrl          String
-  gameType         GameType            @default(iframe)
-  supportedDevices String[]
-  controls         String[]
-  rewardBaseCoins  Int
-  rewardDailyCap   Int
-  adEveryDeaths    Int
-  adBanner         Boolean             @default(true)
+  id                 String              @id @default(cuid())
+  slug               String              @unique
+  title              String
+  status             GameStatus
+  shortDescription   String
+  fullDescription    String
+  category           String
+  tags               String[]
+  thumbnail          String
+  ogImage            String
+  isPlayable         Boolean             @default(false)
+  gameUrl            String
+  gameType           GameType            @default(iframe)
+  supportedDevices   String[]
+  controls           String[]
+  rewardBaseCoins    Int
+  rewardDailyCap     Int
+  adEveryDeaths      Int
+  adBanner           Boolean             @default(true)
   storeCompatibility String[]
-  releaseDate      DateTime
-  seoTitle         String
-  seoDescription   String
-  faq              Json
-  relatedGames     String[]
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  launchSessions   GameLaunchSession[]
-  scores           Score[]
-  rewardCaps       RewardCap[]
-  analyticsEvents  AnalyticsEvent[]
+  releaseDate        DateTime
+  seoTitle           String
+  seoDescription     String
+  faq                Json
+  relatedGames       String[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  versions           GameVersion[]
+  launchSessions     GameLaunchSession[]
+  scores             Score[]
+  leaderboardEntries LeaderboardEntry[]
+  rewardCaps         RewardCap[]
+  rewardLedger       RewardLedger[]
+  analyticsEvents    AnalyticsEvent[]
+  bugReports         BugReport[]
+  quests             Quest[]
+  adEvents           AdEvent[]
   @@index([status])
   @@index([category])
+  @@index([status, category])
+}
+
+model GameVersion {
+  id           String   @id @default(cuid())
+  gameSlug     String
+  version      String
+  buildUrl     String
+  checksum     String?
+  isActive     Boolean  @default(false)
+  releaseNotes String?
+  createdAt    DateTime @default(now())
+  activatedAt  DateTime?
+  game         Game     @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
+  @@unique([gameSlug, version])
+  @@index([gameSlug, isActive])
 }
 
 model GameLaunchSession {
-  id             String              @id @default(cuid())
-  userId         String
-  gameSlug       String
-  status         LaunchSessionStatus @default(created)
-  sessionToken   String              @unique
-  deviceType     String
-  language       String              @default("en")
-  adblockStatus  String              @default("clear")
-  createdAt      DateTime            @default(now())
-  startedAt      DateTime?
-  completedAt    DateTime?
-  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game           Game                @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
-  scores         Score[]
+  id              String              @id @default(cuid())
+  userId          String
+  gameSlug        String
+  status          LaunchSessionStatus @default(created)
+  sessionToken    String              @unique
+  deviceType      String
+  language        String              @default("en")
+  adblockStatus   String              @default("clear")
+  createdAt       DateTime            @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game            Game                @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
+  scores          Score[]
+  rewardLedger    RewardLedger[]
   analyticsEvents AnalyticsEvent[]
+  bugReports      BugReport[]
+  adEvents        AdEvent[]
   @@index([userId])
   @@index([gameSlug])
   @@index([status])
+  @@index([gameSlug, status, createdAt])
 }
 
 model Score {
-  id              String            @id @default(cuid())
-  userId          String
-  gameSlug        String
-  launchSessionId String
-  score           Int
-  reason          String
-  coins           Int
-  accepted        Boolean           @default(true)
-  createdAt       DateTime          @default(now())
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  game            Game              @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
-  launchSession   GameLaunchSession @relation(fields: [launchSessionId], references: [id], onDelete: Cascade)
+  id                 String             @id @default(cuid())
+  userId             String
+  gameSlug           String
+  launchSessionId    String
+  score              Int
+  reason             String
+  coins              Int
+  accepted           Boolean            @default(true)
+  createdAt          DateTime           @default(now())
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game               Game               @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
+  launchSession      GameLaunchSession  @relation(fields: [launchSessionId], references: [id], onDelete: Cascade)
+  leaderboardEntries LeaderboardEntry[]
+  rewardLedger       RewardLedger[]
   @@index([gameSlug, accepted, score])
+  @@index([gameSlug, accepted, createdAt])
   @@index([userId, gameSlug])
   @@index([createdAt])
+}
+
+model LeaderboardEntry {
+  id          String            @id @default(cuid())
+  userId      String
+  gameSlug    String
+  period      LeaderboardPeriod
+  periodStart DateTime
+  periodEnd   DateTime?
+  score       Int
+  scoreId     String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game        Game              @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
+  scoreRecord Score?            @relation(fields: [scoreId], references: [id], onDelete: SetNull)
+  @@unique([userId, gameSlug, period, periodStart])
+  @@index([gameSlug, period, periodStart, score])
+  @@index([userId, gameSlug])
 }
 
 model Wallet {
@@ -204,12 +333,99 @@ model RewardCap {
   baseCoins   Int
   dailyCap    Int
   earnedToday Int      @default(0)
-  capDate     DateTime @default(now())
+  capDate     DateTime
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   game        Game     @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
-  @@unique([userId, gameSlug])
-  @@index([gameSlug])
+  @@unique([userId, gameSlug, capDate])
+  @@index([gameSlug, capDate])
+}
+
+model RewardLedger {
+  id              String             @id @default(cuid())
+  userId          String
+  gameSlug        String
+  launchSessionId String?
+  scoreId         String?
+  coins           Int
+  reason          String
+  createdAt       DateTime           @default(now())
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game            Game               @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
+  launchSession   GameLaunchSession? @relation(fields: [launchSessionId], references: [id], onDelete: SetNull)
+  score           Score?             @relation(fields: [scoreId], references: [id], onDelete: SetNull)
+  @@index([userId, createdAt])
+  @@index([gameSlug, createdAt])
+}
+
+model Quest {
+  id              String          @id @default(cuid())
+  title           String
+  description     String
+  cadence         QuestCadence
+  status          QuestStatus     @default(draft)
+  gameSlug        String?
+  targetEvent     String
+  targetValue     Int
+  rewardCoins     Int
+  startsAt        DateTime
+  endsAt          DateTime
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  game            Game?           @relation(fields: [gameSlug], references: [slug], onDelete: SetNull)
+  progress        QuestProgress[]
+  @@index([status, cadence])
+  @@index([startsAt, endsAt])
+}
+
+model QuestProgress {
+  id          String              @id @default(cuid())
+  questId     String
+  userId      String
+  progress    Int                 @default(0)
+  status      QuestProgressStatus @default(in_progress)
+  completedAt DateTime?
+  claimedAt   DateTime?
+  updatedAt   DateTime            @updatedAt
+  quest       Quest               @relation(fields: [questId], references: [id], onDelete: Cascade)
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([questId, userId])
+  @@index([userId, status])
+}
+
+model BugReport {
+  id              String             @id @default(cuid())
+  userId          String?
+  gameSlug        String?
+  launchSessionId String?
+  message         String
+  severity        String             @default("normal")
+  status          String             @default("open")
+  metadata        Json?
+  createdAt       DateTime           @default(now())
+  user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  game            Game?              @relation(fields: [gameSlug], references: [slug], onDelete: SetNull)
+  launchSession   GameLaunchSession? @relation(fields: [launchSessionId], references: [id], onDelete: SetNull)
+  @@index([status, createdAt])
+  @@index([gameSlug, createdAt])
+}
+
+model AdEvent {
+  id              String             @id @default(cuid())
+  userId          String?
+  gameSlug        String?
+  launchSessionId String?
+  type            AdEventType
+  provider        String?
+  placement       String?
+  revenueMicros   Int?
+  payload         Json?
+  createdAt       DateTime           @default(now())
+  user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  game            Game?              @relation(fields: [gameSlug], references: [slug], onDelete: SetNull)
+  launchSession   GameLaunchSession? @relation(fields: [launchSessionId], references: [id], onDelete: SetNull)
+  @@index([type, createdAt])
+  @@index([gameSlug, createdAt])
 }
 
 model AnalyticsEvent {
