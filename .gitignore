@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.*
+
+# Package manager caches
+.pnpm-store/
+.npm/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+.turbo/
+.vercel/
+.netlify/
+coverage/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Local databases and runtime files
+*.sqlite
+*.sqlite3
+*.db
+.tmp/
+tmp/
+temp/
+.cache/
+
+# Generated game bundles / CDN artifacts
+apps/web/public/games-builds/
+apps/web/public/art/generated/
+apps/web/public/og/generated/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE/editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Test tooling
+playwright-report/
+test-results/
+
+# Keep lockfiles tracked
+!pnpm-lock.yaml
+!package-lock.json
+!yarn.lock
