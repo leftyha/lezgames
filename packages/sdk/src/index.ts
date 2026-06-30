@@ -47,6 +47,19 @@ export type LezGamezSDK = {
   getEquippedItems(): Promise<EquippedItems>;
   reportBug(payload: { message: string }): void;
 };
+
+export type LezGamezShellMessage = {
+  source: 'lezgamez-shell';
+  type: 'launch_context';
+  context: LezGamezLaunchContext;
+};
+
+export type LezGamezGameMessage = {
+  source: 'lezgamez-game';
+  event: SdkEvent;
+  payload?: unknown;
+};
+
 const defaultContext: LezGamezLaunchContext = {
   userId: 'guest',
   language: 'en',
@@ -60,6 +73,7 @@ const defaultContext: LezGamezLaunchContext = {
   launchSessionId: 'server-launch-session-required',
   gameConfig: {},
 };
+
 export function createLezGamezSDK(post: (event: SdkEvent, payload?: unknown) => void, context: Partial<LezGamezLaunchContext> = {}): LezGamezSDK {
   const launchContext = { ...defaultContext, ...context };
   return {
@@ -78,4 +92,36 @@ export function createLezGamezSDK(post: (event: SdkEvent, payload?: unknown) => 
     getEquippedItems: async () => (post('equipped_items_request', { launchSessionId: launchContext.launchSessionId }), launchContext.equippedItems),
     reportBug: (payload) => post('bug_reported', { ...payload, launchSessionId: launchContext.launchSessionId }),
   };
+}
+
+export function createPostMessageLezGamezSDK(context: Partial<LezGamezLaunchContext> = {}, targetOrigin = '*') {
+  return createLezGamezSDK((event, payload) => {
+    if (typeof window === 'undefined' || !window.parent) return;
+    const message: LezGamezGameMessage = { source: 'lezgamez-game', event, payload };
+    window.parent.postMessage(message, targetOrigin);
+  }, context);
+}
+
+export function waitForLezGamezLaunchContext(timeoutMs = 8000): Promise<LezGamezLaunchContext> {
+  return new Promise((resolve, reject) => {
+    if (typeof window === 'undefined') {
+      reject(new Error('waitForLezGamezLaunchContext can only run in a browser.'));
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      window.removeEventListener('message', handleMessage);
+      reject(new Error('Timed out waiting for LezGamez launch context.'));
+    }, timeoutMs);
+
+    function handleMessage(event: MessageEvent<LezGamezShellMessage>) {
+      if (event.data?.source !== 'lezgamez-shell' || event.data.type !== 'launch_context') return;
+      window.clearTimeout(timeout);
+      window.removeEventListener('message', handleMessage);
+      resolve(event.data.context);
+    }
+
+    window.addEventListener('message', handleMessage);
+    window.parent.postMessage({ source: 'lezgamez-game', event: 'ready' } satisfies LezGamezGameMessage, '*');
+  });
 }
