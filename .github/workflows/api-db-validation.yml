@@ -1,0 +1,70 @@
+name: API DB Validation
+
+on:
+  pull_request:
+    paths:
+      - 'apps/api/**'
+      - 'packages/catalog/**'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'turbo.json'
+      - '.github/workflows/api-db-validation.yml'
+  push:
+    branches:
+      - main
+
+jobs:
+  api-db-validation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lezgamez
+          POSTGRES_PASSWORD: lezgamez
+          POSTGRES_DB: lezgamez
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lezgamez -d lezgamez"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://lezgamez:lezgamez@localhost:5432/lezgamez?schema=public
+      SCORE_CHECKSUM_SALT: lezgamez-mvp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Prepare pnpm
+        run: corepack prepare pnpm@9.15.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @lezgamez/api prisma:generate
+
+      - name: Validate migrations against PostgreSQL
+        run: pnpm --filter @lezgamez/api db:deploy
+
+      - name: Seed once
+        run: pnpm --filter @lezgamez/api db:seed
+
+      - name: Seed twice to verify idempotency
+        run: pnpm --filter @lezgamez/api db:seed
+
+      - name: API typecheck
+        run: pnpm --filter @lezgamez/api typecheck
+
+      - name: API build
+        run: pnpm --filter @lezgamez/api build
