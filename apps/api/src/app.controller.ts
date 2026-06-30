@@ -4,14 +4,14 @@ import { Controller, Get } from '@nestjs/common';
 export class AppController {
   @Get('health')
   health() {
-    return { ok: true, service: 'lezgamez-api', persistence: 'postgresql-prisma', architecture: 'modular-nest-domains' };
+    return { ok: true, service: 'lezgamez-api', persistence: 'postgresql-prisma', runtime: ['redis-rate-limit', 'session-auth', 'role-guards'], architecture: 'modular-nest-domains' };
   }
 
   @Get('modules')
   modules() {
     return {
       rule: 'client never decides wallet, rewards, scores or transactions',
-      runtimeState: 'persistent database, domain services and controllers',
+      runtimeState: 'persistent database, Redis rate limit, domain services and controllers',
       implemented: [
         'AuthModule',
         'UsersModule',
@@ -28,9 +28,13 @@ export class AppController {
         'AdsModule',
         'AnalyticsModule',
         'AdminModule',
+        'RedisModule',
+        'RateLimitMiddleware',
+        'AuthGuard',
+        'RolesGuard',
       ],
       intentionallyDeferred: ['PaymentsModule until paid internal credits/cosmetics are approved'],
-      pending: ['auth guards', 'admin permissions', 'Redis rate limit', 'signed score tokens', 'integration tests against a real test database'],
+      pending: ['signed score tokens', 'production backup execution', 'external ad network reporting reconciliation'],
     };
   }
 }
