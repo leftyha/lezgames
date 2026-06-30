@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { LaunchSessionStatus, WalletTransactionType } from '@prisma/client';
+import { AdEventType, LaunchSessionStatus, LeaderboardPeriod, WalletTransactionType } from '@prisma/client';
 import { PrismaService } from './prisma.service';
 
 const DEMO_USER_ID = 'demo-user';
@@ -17,6 +17,43 @@ function startOfUtcDay(date = new Date()) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
+function startOfUtcWeek(date = new Date()) {
+  const start = startOfUtcDay(date);
+  const day = start.getUTCDay();
+  const daysSinceMonday = (day + 6) % 7;
+  start.setUTCDate(start.getUTCDate() - daysSinceMonday);
+  return start;
+}
+
+function addDays(date: Date, days: number) {
+  return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
+function periodWindow(period: LeaderboardPeriod) {
+  if (period === LeaderboardPeriod.daily) {
+    const periodStart = startOfUtcDay();
+    return { periodStart, periodEnd: addDays(periodStart, 1) };
+  }
+
+  if (period === LeaderboardPeriod.weekly) {
+    const periodStart = startOfUtcWeek();
+    return { periodStart, periodEnd: addDays(periodStart, 7) };
+  }
+
+  return { periodStart: new Date(0), periodEnd: null };
+}
+
+function parseLeaderboardPeriod(value?: string): LeaderboardPeriod {
+  if (value === LeaderboardPeriod.daily) return LeaderboardPeriod.daily;
+  if (value === LeaderboardPeriod.weekly) return LeaderboardPeriod.weekly;
+  return LeaderboardPeriod.all_time;
+}
+
+function parseAdEventType(value?: string): AdEventType {
+  if (value && Object.values(AdEventType).includes(value as AdEventType)) return value as AdEventType;
+  throw new BadRequestException('Invalid ad event type.');
+}
+
 @Controller('v1')
 export class AppController {
   constructor(private readonly prisma: PrismaService) {}
@@ -31,8 +68,8 @@ export class AppController {
     return {
       rule: 'client never decides wallet, rewards, scores or transactions',
       runtimeState: 'persistent database, not in-memory arrays',
-      implemented: ['games', 'launch sessions', 'scores', 'leaderboards', 'wallet ledger', 'store', 'inventory', 'purchases', 'reward caps', 'analytics events'],
-      pending: ['auth', 'admin backoffice', 'game versions', 'ads network integration', 'advanced anti-cheat'],
+      implemented: ['games', 'game versions', 'sessions schema', 'admin users schema', 'launch sessions', 'scores', 'leaderboards by period', 'wallet ledger', 'reward ledger', 'store', 'inventory', 'purchases', 'quests schema', 'bug reports', 'ad events', 'analytics events'],
+      pending: ['auth guards', 'admin backoffice UI', 'ads network integration', 'advanced anti-cheat', 'Redis rate limit'],
     };
   }
 
@@ -70,8 +107,14 @@ export class AppController {
   @Get('rewards/caps')
   async rewards() {
     const user = await this.getOrCreateUser(DEMO_USER_ID);
-    const caps = await this.prisma.rewardCap.findMany({ where: { userId: user.id }, orderBy: { gameSlug: 'asc' } });
+    const caps = await this.prisma.rewardCap.findMany({ where: { userId: user.id }, orderBy: [{ capDate: 'desc' }, { gameSlug: 'asc' }] });
     return { caps, rule: 'rewards are capped per user, per game and per UTC day' };
+  }
+
+  @Get('quests')
+  async quests() {
+    const quests = await this.prisma.quest.findMany({ where: { status: 'active' }, orderBy: { endsAt: 'asc' } });
+    return { quests };
   }
 
   @Post('launch-sessions')
@@ -137,29 +180,35 @@ export class AppController {
     const game = await this.prisma.game.findUnique({ where: { slug: body.gameSlug } });
     if (!game) throw new BadRequestException('Unknown game.');
 
-    const cap = await this.getOrCreateRewardCap(user.id, game.slug, game.rewardBaseCoins, game.rewardDailyCap);
     const today = startOfUtcDay();
-    const earnedToday = cap.capDate < today ? 0 : cap.earnedToday;
-    const coins = Math.min(game.rewardBaseCoins + Math.floor(score / 5000), Math.max(0, game.rewardDailyCap - earnedToday));
+    const cap = await this.getOrCreateRewardCap(user.id, game.slug, game.rewardBaseCoins, game.rewardDailyCap, today);
+    const coins = Math.min(game.rewardBaseCoins + Math.floor(score / 5000), Math.max(0, game.rewardDailyCap - cap.earnedToday));
 
     const scoreRecord = await this.prisma.score.create({
       data: { userId: user.id, gameSlug: game.slug, launchSessionId: session.id, score, reason: body.reason ?? 'game_over', coins, accepted: true },
     });
 
     await this.prisma.gameLaunchSession.update({ where: { id: session.id }, data: { status: LaunchSessionStatus.completed, startedAt: session.startedAt ?? session.createdAt, completedAt: new Date() } });
-    await this.prisma.rewardCap.update({ where: { userId_gameSlug: { userId: user.id, gameSlug: game.slug } }, data: { earnedToday: earnedToday + coins, capDate: cap.capDate < today ? today : cap.capDate, baseCoins: game.rewardBaseCoins, dailyCap: game.rewardDailyCap } });
+    await this.prisma.rewardCap.update({ where: { userId_gameSlug_capDate: { userId: user.id, gameSlug: game.slug, capDate: today } }, data: { earnedToday: cap.earnedToday + coins, baseCoins: game.rewardBaseCoins, dailyCap: game.rewardDailyCap } });
 
     if (coins > 0) {
       await this.prisma.walletTransaction.create({ data: { userId: user.id, type: WalletTransactionType.reward, amount: coins, reason: 'valid_score_reward', source: `scores/${game.slug}/${session.id}`, auditId: makeToken('audit_wallet') } });
+      await this.prisma.rewardLedger.create({ data: { userId: user.id, gameSlug: game.slug, launchSessionId: session.id, scoreId: scoreRecord.id, coins, reason: 'valid_score_reward' } });
     }
+
+    await this.upsertLeaderboardEntries(user.id, game.slug, score, scoreRecord.id);
 
     return { accepted: true, serverValidated: true, launchSessionId: session.id, score: scoreRecord, coinsEarned: coins, wallet: await this.getWallet(user.id, user.username) };
   }
 
   @Get('leaderboards/:gameSlug')
   async leaderboard(@Param('gameSlug') gameSlug: string) {
-    const ranked = await this.prisma.score.findMany({ where: { gameSlug, accepted: true }, orderBy: [{ score: 'desc' }, { createdAt: 'asc' }], take: 10, include: { user: true } });
-    return { gameSlug, ranked: ranked.map((score, index) => ({ rank: index + 1, userId: score.user.username, score: score.score, createdAt: score.createdAt })) };
+    return this.getLeaderboard(gameSlug, LeaderboardPeriod.all_time);
+  }
+
+  @Get('leaderboards/:gameSlug/:period')
+  async leaderboardByPeriod(@Param('gameSlug') gameSlug: string, @Param('period') period: string) {
+    return this.getLeaderboard(gameSlug, parseLeaderboardPeriod(period));
   }
 
   @Post('analytics/events')
@@ -170,6 +219,26 @@ export class AppController {
     const launchSession = body.launchSessionId ? await this.prisma.gameLaunchSession.findUnique({ where: { id: body.launchSessionId } }) : null;
     const event = await this.prisma.analyticsEvent.create({ data: { name: body.name, userId: user?.id, gameSlug: game?.slug, launchSessionId: launchSession?.id, payload: body.payload ?? undefined } });
     return { accepted: true, event };
+  }
+
+  @Post('ads/events')
+  async adEvent(@Body() body: { type?: string; userId?: string; gameSlug?: string; launchSessionId?: string; provider?: string; placement?: string; revenueMicros?: number; payload?: Record<string, unknown> }) {
+    const type = parseAdEventType(body.type);
+    const user = body.userId ? await this.findUser(body.userId) : null;
+    const game = body.gameSlug ? await this.prisma.game.findUnique({ where: { slug: body.gameSlug } }) : null;
+    const launchSession = body.launchSessionId ? await this.prisma.gameLaunchSession.findUnique({ where: { id: body.launchSessionId } }) : null;
+    const event = await this.prisma.adEvent.create({ data: { type, userId: user?.id, gameSlug: game?.slug, launchSessionId: launchSession?.id, provider: body.provider, placement: body.placement, revenueMicros: body.revenueMicros, payload: body.payload ?? undefined } });
+    return { accepted: true, event };
+  }
+
+  @Post('bug-reports')
+  async bugReport(@Body() body: { message?: string; userId?: string; gameSlug?: string; launchSessionId?: string; severity?: string; metadata?: Record<string, unknown> }) {
+    if (!body.message) throw new BadRequestException('message is required.');
+    const user = body.userId ? await this.findUser(body.userId) : null;
+    const game = body.gameSlug ? await this.prisma.game.findUnique({ where: { slug: body.gameSlug } }) : null;
+    const launchSession = body.launchSessionId ? await this.prisma.gameLaunchSession.findUnique({ where: { id: body.launchSessionId } }) : null;
+    const report = await this.prisma.bugReport.create({ data: { message: body.message, userId: user?.id, gameSlug: game?.slug, launchSessionId: launchSession?.id, severity: body.severity ?? 'normal', metadata: body.metadata ?? undefined } });
+    return { accepted: true, report };
   }
 
   @Post('store/purchase')
@@ -216,8 +285,28 @@ export class AppController {
     return this.prisma.inventoryItem.findMany({ where: { userId }, include: { storeItem: true }, orderBy: { createdAt: 'desc' } });
   }
 
-  private async getOrCreateRewardCap(userId: string, gameSlug: string, baseCoins: number, dailyCap: number) {
-    return this.prisma.rewardCap.upsert({ where: { userId_gameSlug: { userId, gameSlug } }, update: { baseCoins, dailyCap }, create: { userId, gameSlug, baseCoins, dailyCap, earnedToday: 0, capDate: startOfUtcDay() } });
+  private async getOrCreateRewardCap(userId: string, gameSlug: string, baseCoins: number, dailyCap: number, capDate = startOfUtcDay()) {
+    return this.prisma.rewardCap.upsert({ where: { userId_gameSlug_capDate: { userId, gameSlug, capDate } }, update: { baseCoins, dailyCap }, create: { userId, gameSlug, capDate, baseCoins, dailyCap, earnedToday: 0 } });
+  }
+
+  private async upsertLeaderboardEntries(userId: string, gameSlug: string, score: number, scoreId: string) {
+    for (const period of [LeaderboardPeriod.daily, LeaderboardPeriod.weekly, LeaderboardPeriod.all_time]) {
+      const window = periodWindow(period);
+      const current = await this.prisma.leaderboardEntry.findUnique({ where: { userId_gameSlug_period_periodStart: { userId, gameSlug, period, periodStart: window.periodStart } } });
+      if (!current || score > current.score) {
+        await this.prisma.leaderboardEntry.upsert({
+          where: { userId_gameSlug_period_periodStart: { userId, gameSlug, period, periodStart: window.periodStart } },
+          update: { score, scoreId, periodEnd: window.periodEnd },
+          create: { userId, gameSlug, period, periodStart: window.periodStart, periodEnd: window.periodEnd, score, scoreId },
+        });
+      }
+    }
+  }
+
+  private async getLeaderboard(gameSlug: string, period: LeaderboardPeriod) {
+    const window = periodWindow(period);
+    const entries = await this.prisma.leaderboardEntry.findMany({ where: { gameSlug, period, periodStart: window.periodStart }, orderBy: [{ score: 'desc' }, { updatedAt: 'asc' }], take: 10, include: { user: true } });
+    return { gameSlug, period, periodStart: window.periodStart, periodEnd: window.periodEnd, ranked: entries.map((entry, index) => ({ rank: index + 1, userId: entry.user.username, score: entry.score, updatedAt: entry.updatedAt })) };
   }
 
   private toGameDto(game: any) {
