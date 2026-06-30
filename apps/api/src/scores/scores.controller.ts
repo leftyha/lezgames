@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { SubmitScoreDto } from './dto/submit-score.dto';
 import { ScoresService } from './scores.service';
 
@@ -9,5 +9,10 @@ export class ScoresController {
   @Post()
   submit(@Body() body: SubmitScoreDto) {
     return this.scores.submit(body);
+  }
+
+  @Get(':userId/:gameSlug/best')
+  best(@Param('userId') userId: string, @Param('gameSlug') gameSlug: string) {
+    return this.scores.bestForUser(userId, gameSlug);
   }
 }
