@@ -66,5 +66,11 @@ jobs:
       - name: API typecheck
         run: pnpm --filter @lezgamez/api typecheck
 
+      - name: API unit tests
+        run: pnpm --filter @lezgamez/api test:unit
+
+      - name: API integration tests
+        run: pnpm --filter @lezgamez/api test:int
+
       - name: API build
         run: pnpm --filter @lezgamez/api build
