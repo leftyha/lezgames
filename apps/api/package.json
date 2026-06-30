@@ -2,10 +2,10 @@
   "name": "@lezgamez/api",
   "private": true,
   "scripts": {
-    "dev": "nest start --watch",
+    "dev": "prisma generate && nest start --watch",
     "build": "prisma generate && tsc -p tsconfig.json",
-    "lint": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
+    "lint": "prisma generate && tsc --noEmit",
+    "typecheck": "prisma generate && tsc --noEmit",
     "prisma:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
