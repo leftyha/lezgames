@@ -47,6 +47,12 @@ export class ScoresService {
     }
 
     await this.leaderboards.upsertEntries(user.id, game.slug, score, scoreRecord.id);
-    return { accepted: true, serverValidated: true, launchSessionId: session!.id, score: scoreRecord, coinsEarned: coins, wallet: await this.wallet.getWallet(user.id, user.username) };
+    return { accepted: true, serverValidated: true, launchSessionId: session!.id, score: scoreRecord, coinsEarned: coins, wallet: await this.wallet.getWallet(user.id, user.username), bestScore: await this.bestForUser(user.username, game.slug) };
+  }
+
+  async bestForUser(publicUserId: string, gameSlug: string) {
+    const user = await this.users.getOrCreate(publicUserId || DEMO_USER_ID);
+    const best = await this.prisma.score.findFirst({ where: { userId: user.id, gameSlug, accepted: true }, orderBy: [{ score: 'desc' }, { createdAt: 'asc' }] });
+    return { userId: user.username, gameSlug, bestScore: best?.score ?? 0, score: best };
   }
 }
