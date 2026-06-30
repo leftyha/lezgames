@@ -1,0 +1,46 @@
+name: Web Validation
+
+on:
+  pull_request:
+    paths:
+      - 'apps/web/**'
+      - 'packages/catalog/**'
+      - 'packages/ui/**'
+      - 'packages/sdk/**'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'turbo.json'
+      - '.github/workflows/web-validation.yml'
+  push:
+    branches:
+      - main
+
+jobs:
+  web-validation:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:4000/api
+      NEXT_PUBLIC_ENABLE_DEMO_SCORE: 'false'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Prepare pnpm
+        run: corepack prepare pnpm@9.15.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Web typecheck
+        run: pnpm --filter @lezgamez/web typecheck
+
+      - name: Web build
+        run: pnpm --filter @lezgamez/web build
