@@ -2,6 +2,16 @@
 
 Monorepo base para la plataforma LEZGAMEZ: web en Next.js, API en NestJS, catálogo compartido, tokens/componentes UI y contrato de Game SDK.
 
+## Estado actual honesto
+
+Esta rama avanza el scaffold hacia un MVP ejecutable, pero todavía no reemplaza los módulos productivos finales.
+
+- ✅ Plataforma navegable con rutas SEO, catálogo, play shell, wallet, store, inventory, leaderboards, legal y admin mínimo.
+- ✅ Game Shell funcional: crea launch session, valida adblock antes de iniciar, carga iframe después de Play, envía contexto SDK y acepta eventos por `postMessage`.
+- ✅ Demo build same-origin para probar `/play/:slug` sin subir todavía bundles reales por juego.
+- ✅ API mock con launch sessions, score submit validado por checksum básico, leaderboard, wallet ledger mutable, store purchase e inventory.
+- ⚠️ Pendiente para producción: auth, PostgreSQL/Prisma, Redis/rate limit, módulos Nest reales, anti-cheat fuerte, ads reales, analytics dashboard y admin protegido.
+
 ## Requisitos previos
 
 Antes de iniciar los servidores, instala o confirma estas herramientas:
@@ -28,6 +38,7 @@ Antes de iniciar los servidores, instala o confirma estas herramientas:
 - `packages/catalog`: datos y modelos compartidos del catálogo de juegos.
 - `packages/ui`: tokens visuales y componentes compartidos.
 - `packages/sdk`: contrato compartido del Game SDK.
+- `docs/mvp-implementation-status.md`: estado real contra el master plan y próximos cortes.
 
 ## Tutorial paso a paso para iniciar los servidores
 
@@ -66,7 +77,11 @@ Rutas útiles de la web:
 
 - `http://localhost:3000/`: home de LEZGAMEZ.
 - `http://localhost:3000/games`: catálogo de juegos.
-- `http://localhost:3000/play/golden-rain-zombies`: shell de juego de ejemplo.
+- `http://localhost:3000/play/golden-rain-zombies`: Game Shell con demo build y score submit validado.
+- `http://localhost:3000/wallet`: ledger leído desde API.
+- `http://localhost:3000/store`: catálogo de tienda leído desde API.
+- `http://localhost:3000/inventory`: inventario leído desde API.
+- `http://localhost:3000/leaderboards`: rankings leídos desde API.
 
 ### Paso 4: Probar la API
 
@@ -93,7 +108,18 @@ curl http://localhost:4000/api/v1/wallet/demo-user/transactions
 curl http://localhost:4000/api/v1/store/items
 curl http://localhost:4000/api/v1/inventory/demo-user
 curl http://localhost:4000/api/v1/rewards/caps
+curl http://localhost:4000/api/v1/leaderboards/golden-rain-zombies
 ```
+
+Crear una launch session:
+
+```bash
+curl -X POST http://localhost:4000/api/v1/launch-sessions \
+  -H "Content-Type: application/json" \
+  -d '{"userId":"demo-user","gameSlug":"golden-rain-zombies","deviceType":"desktop","adblockStatus":"clear"}'
+```
+
+> El score submit requiere el `launchSessionId` generado y un checksum `base64url("${launchSessionId}:${score}:lezgamez-mvp")`. El Game Shell ya lo calcula automáticamente.
 
 ### Paso 5: Cambiar el puerto de la API si hace falta
 
@@ -103,10 +129,10 @@ Si el puerto `4000` está ocupado, inicia la API con otro puerto:
 PORT=4001 pnpm --filter @lezgamez/api dev
 ```
 
-Luego prueba:
+Luego apunta la web a esa API:
 
 ```bash
-curl http://localhost:4001/api/v1/health
+NEXT_PUBLIC_API_BASE_URL=http://localhost:4001/api pnpm --filter @lezgamez/web dev
 ```
 
 ### Paso 6: Iniciar solo un servidor específico
@@ -169,10 +195,18 @@ pnpm typecheck
 pnpm build
 ```
 
-## MVP scope cubierto
+## MVP scope cubierto en esta etapa
 
-- Rutas SEO, páginas de detalle de juegos y shell `/play/:slug`.
+- Rutas SEO, páginas de detalle de juegos y Game Shell `/play/:slug` funcional con demo build.
 - Sistema visual premium oscuro usando tokens maestros.
 - Catálogo con 10 juegos live y 4 entradas beta/coming soon.
 - Disclaimers de wallet/store: Lez Coins son créditos internos únicamente.
-- Scaffold de API con contratos obligatorios de módulos.
+- API mock con contratos de launch sessions, score validation, wallet, store, inventory, rewards, analytics y leaderboards.
+
+## Siguiente corte recomendado
+
+1. Separar la API en módulos Nest reales.
+2. Añadir Prisma/PostgreSQL y migraciones MVP.
+3. Reemplazar demo build por bundles reales por juego.
+4. Proteger `/admin` con AuthModule/AdminModule.
+5. Añadir anti-cheat/rate limit y analytics persistentes.
