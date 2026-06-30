@@ -3,16 +3,19 @@ export const dynamic = 'force-dynamic';
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL ?? 'http://localhost:4000/api';
 const DEMO_USER_ID = 'demo-user';
 
+type StoreItem = {
+  name: string;
+  category: string;
+  compatibleGames: string[];
+  price: number;
+};
+
 type InventoryItem = {
   id: string;
   storeItemId: string;
   equippedFor: string[];
-  item?: {
-    name: string;
-    category: string;
-    compatibleGames: string[];
-    price: number;
-  };
+  storeItem?: StoreItem;
+  item?: StoreItem;
 };
 
 type InventoryResponse = {
@@ -40,15 +43,18 @@ export default async function Inventory() {
       {!inventory && <section className="panel"><h2>API unavailable</h2><p className="muted">Start the API at {API_BASE} to load owned items.</p></section>}
       <div className="grid">
         {owned.length === 0 && <article className="card"><h2>No owned items</h2><p className="muted">Purchases will appear here after the API validates wallet and compatibility.</p></article>}
-        {owned.map((inventoryItem) => (
-          <article className="card" key={inventoryItem.id}>
-            <div className="thumb">◆</div>
-            <span className="status">{inventoryItem.item?.category ?? 'item'}</span>
-            <h2>{inventoryItem.item?.name ?? inventoryItem.storeItemId}</h2>
-            <p className="muted">Compatible with: {inventoryItem.item?.compatibleGames.join(', ') ?? 'unknown'}</p>
-            <p className="muted">Equipped for: {inventoryItem.equippedFor.length > 0 ? inventoryItem.equippedFor.join(', ') : 'not equipped'}</p>
-          </article>
-        ))}
+        {owned.map((inventoryItem) => {
+          const item = inventoryItem.storeItem ?? inventoryItem.item;
+          return (
+            <article className="card" key={inventoryItem.id}>
+              <div className="thumb">◆</div>
+              <span className="status">{item?.category ?? 'item'}</span>
+              <h2>{item?.name ?? inventoryItem.storeItemId}</h2>
+              <p className="muted">Compatible with: {item?.compatibleGames.join(', ') ?? 'unknown'}</p>
+              <p className="muted">Equipped for: {inventoryItem.equippedFor.length > 0 ? inventoryItem.equippedFor.join(', ') : 'not equipped'}</p>
+            </article>
+          );
+        })}
       </div>
     </main>
   );
