@@ -50,7 +50,7 @@ describe('App integration', () => {
     expect(leaderboard.body.period).toBe('all_time');
   });
 
-  it('creates launch session and submits a validated score', async () => {
+  it('creates launch session, submits a validated score and reads personal best', async () => {
     const launch = await request(app.getHttpServer())
       .post('/api/v1/launch-sessions')
       .send({ userId: 'demo-user', gameSlug: 'golden-rain-zombies', deviceType: 'desktop', adblockStatus: 'clear' })
@@ -66,6 +66,10 @@ describe('App integration', () => {
 
     expect(result.body.accepted).toBe(true);
     expect(result.body.serverValidated).toBe(true);
+    expect(result.body.bestScore.bestScore).toBeGreaterThanOrEqual(score);
+
+    const best = await request(app.getHttpServer()).get('/api/v1/scores/demo-user/golden-rain-zombies/best').expect(200);
+    expect(best.body.bestScore).toBeGreaterThanOrEqual(score);
   });
 
   it('rejects invalid score checksum', async () => {
@@ -86,7 +90,7 @@ describe('App integration', () => {
     await request(app.getHttpServer()).post('/api/v1/bug-reports').send({ userId: 'demo-user', gameSlug: 'golden-rain-zombies', message: 'Integration bug report', severity: 'low' }).expect(201);
   });
 
-  it('requires session auth and admin role for admin dashboard', async () => {
+  it('requires session auth and admin role for admin dashboard and ad config', async () => {
     await request(app.getHttpServer()).get('/api/v1/admin/dashboard').expect(401);
 
     const session = await request(app.getHttpServer()).post('/api/v1/auth/demo-session').expect(201);
@@ -94,6 +98,11 @@ describe('App integration', () => {
 
     const dashboard = await request(app.getHttpServer()).get('/api/v1/admin/dashboard').set('Authorization', `Bearer ${token}`).expect(200);
     expect(dashboard.body.users).toBeGreaterThan(0);
+
+    const adConfig = await request(app.getHttpServer()).get('/api/v1/admin/games/golden-rain-zombies/ad-config').set('Authorization', `Bearer ${token}`).expect(200);
+    expect(adConfig.body.adRules).toBeDefined();
+
+    await request(app.getHttpServer()).put('/api/v1/admin/games/golden-rain-zombies/ad-config').set('Authorization', `Bearer ${token}`).send({ interstitialEveryDeaths: 2, banner: true }).expect(200);
   });
 
   it('validates DTOs and rejects unknown fields', async () => {
