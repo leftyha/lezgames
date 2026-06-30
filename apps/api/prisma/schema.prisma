@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum GameStatus {
+  live
+  beta
+  coming_soon
+}
+
+enum GameType {
+  iframe
+  canvas
+}
+
+enum LaunchSessionStatus {
+  created
+  started
+  completed
+  rejected
+}
+
+enum WalletTransactionType {
+  reward
+  purchase
+  admin_grant
+  reversal
+}
+
+enum StoreCategory {
+  skins
+  trails
+  hit_effects
+  profile_badges
+  frames
+  seasonal_items
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  username           String              @unique
+  email              String?             @unique
+  language           String              @default("en")
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  wallet             Wallet?
+  launchSessions     GameLaunchSession[]
+  scores             Score[]
+  walletTransactions WalletTransaction[]
+  inventoryItems     InventoryItem[]
+  purchases          Purchase[]
+  rewardCaps         RewardCap[]
+  analyticsEvents    AnalyticsEvent[]
+}
+
+model Game {
+  id               String              @id @default(cuid())
+  slug             String              @unique
+  title            String
+  status           GameStatus
+  shortDescription String
+  fullDescription  String
+  category         String
+  tags             String[]
+  thumbnail        String
+  ogImage          String
+  isPlayable       Boolean             @default(false)
+  gameUrl          String
+  gameType         GameType            @default(iframe)
+  supportedDevices String[]
+  controls         String[]
+  rewardBaseCoins  Int
+  rewardDailyCap   Int
+  adEveryDeaths    Int
+  adBanner         Boolean             @default(true)
+  storeCompatibility String[]
+  releaseDate      DateTime
+  seoTitle         String
+  seoDescription   String
+  faq              Json
+  relatedGames     String[]
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  launchSessions   GameLaunchSession[]
+  scores           Score[]
+  rewardCaps       RewardCap[]
+  analyticsEvents  AnalyticsEvent[]
+  @@index([status])
+  @@index([category])
+}
+
+model GameLaunchSession {
+  id             String              @id @default(cuid())
+  userId         String
+  gameSlug       String
+  status         LaunchSessionStatus @default(created)
+  sessionToken   String              @unique
+  deviceType     String
+  language       String              @default("en")
+  adblockStatus  String              @default("clear")
+  createdAt      DateTime            @default(now())
+  startedAt      DateTime?
+  completedAt    DateTime?
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game           Game                @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
+  scores         Score[]
+  analyticsEvents AnalyticsEvent[]
+  @@index([userId])
+  @@index([gameSlug])
+  @@index([status])
+}
+
+model Score {
+  id              String            @id @default(cuid())
+  userId          String
+  gameSlug        String
+  launchSessionId String
+  score           Int
+  reason          String
+  coins           Int
+  accepted        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game            Game              @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
+  launchSession   GameLaunchSession @relation(fields: [launchSessionId], references: [id], onDelete: Cascade)
+  @@index([gameSlug, accepted, score])
+  @@index([userId, gameSlug])
+  @@index([createdAt])
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  currency  String   @default("LC")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WalletTransaction {
+  id        String                @id @default(cuid())
+  userId    String
+  type      WalletTransactionType
+  amount    Int
+  reason    String
+  source    String
+  auditId   String                @unique
+  createdAt DateTime              @default(now())
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, createdAt])
+  @@index([type])
+}
+
+model StoreItem {
+  id              String          @id
+  name            String
+  category        StoreCategory
+  price           Int
+  compatibleGames String[]
+  featured        Boolean         @default(false)
+  active          Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  inventoryItems  InventoryItem[]
+  purchases       Purchase[]
+  @@index([category])
+  @@index([active])
+}
+
+model InventoryItem {
+  id          String    @id @default(cuid())
+  userId      String
+  storeItemId String
+  equippedFor String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeItem   StoreItem @relation(fields: [storeItemId], references: [id], onDelete: Cascade)
+  @@unique([userId, storeItemId])
+  @@index([userId])
+}
+
+model Purchase {
+  id          String    @id @default(cuid())
+  userId      String
+  storeItemId String
+  price       Int
+  gameSlug    String?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeItem   StoreItem @relation(fields: [storeItemId], references: [id], onDelete: Cascade)
+  @@index([userId, createdAt])
+}
+
+model RewardCap {
+  id          String   @id @default(cuid())
+  userId      String
+  gameSlug    String
+  baseCoins   Int
+  dailyCap    Int
+  earnedToday Int      @default(0)
+  capDate     DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game        Game     @relation(fields: [gameSlug], references: [slug], onDelete: Cascade)
+  @@unique([userId, gameSlug])
+  @@index([gameSlug])
+}
+
+model AnalyticsEvent {
+  id              String             @id @default(cuid())
+  name            String
+  userId          String?
+  gameSlug        String?
+  launchSessionId String?
+  payload         Json?
+  createdAt       DateTime           @default(now())
+  user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  game            Game?              @relation(fields: [gameSlug], references: [slug], onDelete: SetNull)
+  launchSession   GameLaunchSession? @relation(fields: [launchSessionId], references: [id], onDelete: SetNull)
+  @@index([name, createdAt])
+  @@index([gameSlug, createdAt])
+}
