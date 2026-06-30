@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AdblockCheckResult, detectAdblock } from '../lib/adblock-detector';
 
 type ShellGame = {
   slug: string;
@@ -66,19 +67,16 @@ function getSameOriginGameUrl(path: string) {
   return path;
 }
 
-async function detectAdblock() {
-  if (typeof document === 'undefined') return false;
-
-  const bait = document.createElement('div');
-  bait.className = 'adsbox ad-banner ad-unit text-ad';
-  bait.style.cssText = 'height:1px;width:1px;position:absolute;left:-9999px;top:-9999px;';
-  document.body.appendChild(bait);
-  await new Promise((resolve) => window.setTimeout(resolve, 80));
-
-  const blocked = bait.offsetHeight === 0 || bait.offsetParent === null || window.getComputedStyle(bait).display === 'none';
-  bait.remove();
-
-  return blocked;
+function getApiError(payload: unknown, fallback: string) {
+  if (payload && typeof payload === 'object') {
+    if ('message' in payload && typeof payload.message === 'string') return payload.message;
+    if ('error' in payload && payload.error && typeof payload.error === 'object' && 'message' in payload.error) {
+      const message = payload.error.message;
+      if (typeof message === 'string') return message;
+      if (Array.isArray(message)) return message.join(', ');
+    }
+  }
+  return fallback;
 }
 
 export function GameShell({ game, recommended }: GameShellProps) {
@@ -88,6 +86,7 @@ export function GameShell({ game, recommended }: GameShellProps) {
   const [scoreResult, setScoreResult] = useState<ScoreResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [events, setEvents] = useState<string[]>([]);
+  const [adblockResult, setAdblockResult] = useState<AdblockCheckResult | null>(null);
 
   const gameUrl = useMemo(() => getSameOriginGameUrl(launch?.gameUrl ?? game.gameUrl), [game.gameUrl, launch?.gameUrl]);
 
@@ -116,19 +115,49 @@ export function GameShell({ game, recommended }: GameShellProps) {
     [game.slug, launch?.launchSessionId],
   );
 
+  const postAdEvent = useCallback(
+    async (type: 'opportunity' | 'blocked' | 'failed' | 'completed', payload?: Record<string, unknown>) => {
+      try {
+        await fetch(`${API_BASE}/v1/ads/events`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type,
+            userId: DEMO_USER_ID,
+            gameSlug: game.slug,
+            launchSessionId: launch?.launchSessionId,
+            provider: 'client-adblock-detector',
+            placement: 'pre_launch_probe',
+            payload,
+          }),
+        });
+      } catch {
+        // Ad telemetry must never block gameplay in the MVP shell.
+      }
+    },
+    [game.slug, launch?.launchSessionId],
+  );
+
   const start = useCallback(async () => {
     setError(null);
     setScoreResult(null);
+    setAdblockResult(null);
     setState('checking_adblock');
     pushEvent('checking_adblock');
+    void postAdEvent('opportunity', { placement: 'pre_launch_probe' });
 
-    const adblockDetected = await detectAdblock();
-    if (adblockDetected) {
+    const adblockCheck = await detectAdblock();
+    setAdblockResult(adblockCheck);
+    pushEvent(`adblock_${adblockCheck.status}`);
+
+    if (adblockCheck.blocked) {
       setState('blocked');
-      pushEvent('adblock_blocked');
+      setError(`Adblock detected: ${adblockCheck.reasons.join(', ') || 'provider probe blocked'}`);
+      void postAdEvent('blocked', adblockCheck as unknown as Record<string, unknown>);
       return;
     }
 
+    void postAdEvent('completed', adblockCheck as unknown as Record<string, unknown>);
     setState('launching');
     pushEvent('launch_session_request');
 
@@ -141,24 +170,24 @@ export function GameShell({ game, recommended }: GameShellProps) {
           gameSlug: game.slug,
           deviceType: detectDeviceType(),
           language: window.navigator.language || 'en',
-          adblockStatus: 'clear',
+          adblockStatus: adblockCheck.status,
         }),
       });
 
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.message ?? 'Could not create launch session.');
+        throw new Error(getApiError(payload, 'Could not create launch session.'));
       }
 
       setLaunch(payload);
       setState('loading_game');
       pushEvent(`launch_created:${payload.launchSessionId}`);
-      await postAnalytics('play_clicked', { gameType: game.gameType });
+      await postAnalytics('play_clicked', { gameType: game.gameType, adblockStatus: adblockCheck.status, adblockReasons: adblockCheck.reasons });
     } catch (cause) {
       setState('error');
       setError(cause instanceof Error ? cause.message : 'Could not start the game.');
     }
-  }, [game.gameType, game.slug, postAnalytics, pushEvent]);
+  }, [game.gameType, game.slug, postAdEvent, postAnalytics, pushEvent]);
 
   const sendContextToGame = useCallback(() => {
     if (!iframeRef.current?.contentWindow || !launch) return;
@@ -196,7 +225,7 @@ export function GameShell({ game, recommended }: GameShellProps) {
 
         const payload = await response.json();
         if (!response.ok) {
-          throw new Error(payload.message ?? 'Score rejected.');
+          throw new Error(getApiError(payload, 'Score rejected.'));
         }
 
         setScoreResult(payload);
@@ -255,11 +284,11 @@ export function GameShell({ game, recommended }: GameShellProps) {
             <p className="mono">GAME SHELL · SDK SESSION REQUIRED</p>
             <h1>{game.title}</h1>
             <p className="muted">
-              Play now creates a launch session, checks adblock, loads the iframe only after approval, sends SDK context and validates score server-side.
+              Play now creates a launch session, checks adblock with bait + provider script probes, loads the iframe only after approval, sends SDK context and validates score server-side.
             </p>
           </header>
 
-          <section className="stage shell" aria-label={`${game.title} launch shell`}>
+          <section className="game-frame-wrap">
             {!canShowGame && (
               <div className="shell-overlay">
                 <p className="mono">STATE · {state}</p>
@@ -320,6 +349,22 @@ export function GameShell({ game, recommended }: GameShellProps) {
             <span>{state}</span>
             <span>{launch ? '✅' : '—'}</span>
           </div>
+          <div className="row">
+            <b className="mono">Adblock</b>
+            <span>{adblockResult?.status ?? 'not checked'}</span>
+            <span>{adblockResult?.blocked ? '🚫' : adblockResult ? '✅' : '—'}</span>
+          </div>
+          {adblockResult && (
+            <div className="adblock-diagnostics">
+              <p className="muted">Bait hidden: {adblockResult.baitHidden ? 'yes' : 'no'}</p>
+              {adblockResult.providerProbeResults.map((probe) => (
+                <p className="mono" key={`${probe.name}-${probe.src}`}>
+                  {probe.name}: {probe.status}
+                </p>
+              ))}
+              {adblockResult.reasons.length > 0 && <p className="muted">Reasons: {adblockResult.reasons.join(', ')}</p>}
+            </div>
+          )}
           <div className="row">
             <b className="mono">Base</b>
             <span>Reward</span>
