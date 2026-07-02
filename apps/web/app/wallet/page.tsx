@@ -41,7 +41,7 @@ function formatAmount(amount: number, currency: string) {
 
 export default async function Wallet() {
   const wallet = await getWallet();
-  const currency = wallet?.currency ?? 'LC';
+  const currency = wallet?.currency ?? 'BC';
   const transactions = wallet?.transactions ?? [];
 
   return (
