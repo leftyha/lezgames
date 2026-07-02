@@ -8,14 +8,14 @@ export class WalletService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getWallet(userId: string, username: string) {
-    await this.prisma.wallet.upsert({ where: { userId }, update: { currency: 'LC' }, create: { userId, currency: 'LC' } });
+    await this.prisma.wallet.upsert({ where: { userId }, update: { currency: 'BC' }, create: { userId, currency: 'BC' } });
     const transactions = await this.prisma.walletTransaction.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
     const balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
     return {
       userId: username,
       balance,
-      currency: 'LC',
-      disclaimer: 'Lez Coins are internal credits only and cannot be withdrawn, sold, transferred or exchanged for real money.',
+      currency: 'BC',
+      disclaimer: 'Bug Coins are internal credits only and cannot be withdrawn, sold, transferred or exchanged for real money.',
       calculatedServerSide: true,
       persistence: 'postgresql-prisma',
       transactions,
