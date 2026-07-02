@@ -44,7 +44,7 @@ export default async function Store() {
             <div className="thumb">✦</div>
             <span className="status">{item.category}</span>
             <h2>{item.name}</h2>
-            <b className="mono">{item.price.toLocaleString('en-US')} LC</b>
+            <b className="mono">{item.price.toLocaleString('en-US')} BC</b>
             <p className="muted">Compatible with: {item.compatibleGames.join(', ')}</p>
             <p className="muted">Cosmetic only. No gameplay advantage.</p>
           </article>
