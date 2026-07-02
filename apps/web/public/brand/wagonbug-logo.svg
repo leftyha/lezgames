@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-labelledby="title desc">
+  <title id="title">WagonBug Arcade logo</title>
+  <desc id="desc">WagonBug Arcade logo with mascot mark, wordmark, arcade label and tagline.</desc>
+  <rect width="960" height="360" rx="28" fill="#05070B"/>
+  <defs>
+    <linearGradient id="word" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#F7F8FF"/>
+      <stop offset="0.58" stop-color="#F7F8FF"/>
+      <stop offset="0.59" stop-color="#A7FF00"/>
+      <stop offset="1" stop-color="#A7FF00"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g transform="translate(480 86)" filter="url(#glow)">
+    <circle r="44" fill="#05070B" stroke="#8B2CFF" stroke-width="5"/>
+    <path d="M-31-42C-50-66-60-77-72-80" stroke="#8B2CFF" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <circle cx="-76" cy="-81" r="9" fill="#8B2CFF"/>
+    <path d="M31-42C50-66 60-77 72-80" stroke="#A7FF00" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <circle cx="76" cy="-81" r="9" fill="#A7FF00"/>
+    <path d="M-51 8-86-8l26 38m111-22 35-16-26 38" stroke="#00E5FF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M-27-7c14 1 25 8 31 21-20 0-31-7-31-21Zm54 0c-14 1-25 8-31 21 20 0 31-7 31-21Z" fill="#F7F8FF"/>
+    <path d="M-18 25c17 10 32 10 46 0" stroke="#F7F8FF" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M27 23 42 34l-15 7Z" fill="#F7F8FF"/>
+  </g>
+  <text x="480" y="205" text-anchor="middle" font-family="Space Grotesk, Inter, Arial Black, sans-serif" font-size="86" font-weight="800" font-style="italic" letter-spacing="-4" fill="url(#word)" stroke="#05070B" stroke-width="5" paint-order="stroke fill">WagonBug</text>
+  <path d="M350 238h260l22 22-22 22H350l-22-22Z" fill="none" stroke="#00E5FF" stroke-width="3"/>
+  <text x="480" y="271" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="32" font-weight="700" letter-spacing="18" fill="#00E5FF">ARCADE</text>
+  <text x="480" y="318" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="22" font-weight="700" letter-spacing="7" fill="#F7F8FF">WEIRD GAMES. ROLLING CHAOS.</text>
+</svg>

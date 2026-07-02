@@ -10,26 +10,29 @@ Este documento aterriza el master plan contra el estado real del código. Usa tr
 
 El repo ya no es solo una maqueta estática: ahora tiene un flujo vertical demo para `play -> launch session -> iframe -> SDK postMessage -> score submit -> reward -> wallet -> leaderboard`.
 
-Aun así, sigue siendo una implementación MVP mock/in-memory. No debe considerarse lista para producción hasta agregar persistencia, auth, admin protegido, anti-cheat fuerte, ads reales y analytics persistente.
+Este corte también rebrandea la experiencia visible a **WagonBug Arcade**, con paleta morado/lima/cyan, copy público actualizado y assets SVG base para logo/mark.
+
+Aun así, sigue siendo una implementación MVP. No debe considerarse lista para producción hasta completar anti-cheat fuerte, ads reales, analytics persistente, QA mobile final, admin completo y operación productiva.
 
 ## Comparación por bloque
 
 | Bloque | Estado | Implementado ahora | Pendiente para producción |
 | --- | --- | --- | --- |
 | Plataforma navegable | `[x]` | Home, catálogo, detalle, play, store, wallet, inventory, leaderboards, legal, admin mínimo. | Mejorar contenido final, UX y QA mobile real. |
+| Branding WagonBug | `[~]` | Nombre visible, copy, paleta global, Bug Coins y assets SVG base. | Renombrar scopes técnicos si se decide, revisar dominios, favicon/OG finales y guía de marca. |
 | Catálogo | `[x]` | 10 live + 4 beta/coming soon con SEO, rewards, ads, store compatibility y `gameUrl`. | Admin para editar catálogo sin deploy. |
-| Game Shell | `[~]` | Crea launch session, valida adblock básico, carga iframe después de Play, manda contexto SDK, escucha eventos y muestra post-game validado. | Fullscreen real, timeout robusto, manejo de errores de build, ads reales, controles finales por juego. |
+| Game Shell | `[~]` | Crea launch session, valida adblock básico, carga iframe después de Play, manda contexto SDK, escucha eventos y muestra post-game validado. | Fullscreen real refinado, manejo avanzado de errores de build, ads reales, controles finales por juego. |
 | Demo game builds | `[~]` | Ruta same-origin `/games-builds/:slug/index.html` para probar integración sin bundles reales. | Subir builds reales por juego y assets hasheados/CDN. |
 | Game SDK | `[~]` | Contrato de eventos + helpers `postMessage` y espera de launch context. | SDK versionado, documentación por engine, handshake más estricto y validación real con backend. |
-| API | `[~]` | Endpoints mock para health, modules, launch-sessions, scores, leaderboards, wallet, store, inventory, rewards y analytics. | Separar módulos Nest, agregar DB, Redis, auth, rate limit y tests. |
-| Wallet | `[~]` | Balance server-side desde ledger mutable en memoria; rewards y compras agregan transacciones. | Tabla `wallets`, `wallet_transactions`, auditoría real y reversals. |
-| Store | `[~]` | Items desde API y compra mock que valida balance/compatibilidad y crea inventario en memoria. | `purchases`, idempotencia, admin store y pagos internos sin cash-out si aplica. |
+| API | `[~]` | Endpoints MVP para health, modules, launch-sessions, scores, leaderboards, wallet, store, inventory, rewards, ads y analytics. | Completar operación productiva, reconciliación de reporting, rate limit y tests finales. |
+| Wallet | `[~]` | Balance server-side desde ledger; rewards y compras agregan transacciones; visible como Bug Coins (`BC`). | Auditoría productiva, reversals completos y políticas de abuso. |
+| Store | `[~]` | Items desde API y compra MVP que valida balance/compatibilidad y crea inventario. | `purchases`, idempotencia, admin store y pagos internos sin cash-out si aplica. |
 | Inventory | `[~]` | Página lee owned items desde API. | Equip/unequip real, reglas por juego y entrega estricta al SDK. |
-| Leaderboards | `[~]` | Página lee scores validados de API mock. | Rankings daily/weekly/all-time persistentes y anti-cheat. |
-| Analytics | `[~]` | Intake de eventos en memoria. | Persistencia, dashboard, métricas por juego/país/dispositivo y revenue events. |
-| Admin | `[ ]` | Página placeholder. | Auth, permisos, dashboard, CRUD de juegos/store/quests/ads. |
+| Leaderboards | `[~]` | Página lee scores validados de API MVP. | Rankings daily/weekly/all-time persistentes con anti-cheat fuerte. |
+| Analytics | `[~]` | Intake de eventos. | Persistencia, dashboard, métricas por juego/país/dispositivo y revenue events. |
+| Admin | `[ ]` | Página placeholder y algunos endpoints protegidos. | Auth/permisos finales, dashboard, CRUD de juegos/store/quests/ads. |
 | Legal/cookies | `[~]` | Páginas y disclaimers existen. | Cookie banner real, consentimiento por región y revisión legal. |
-| Seguridad/anti-copia | `[~]` | CSP básico, launch sessions mock, checksum básico de score. | Signed tokens, WAF/CDN, rate limit, anti-hotlink, no source maps, anti-cheat avanzado. |
+| Seguridad/anti-copia | `[~]` | CSP básico, launch sessions MVP, checksum básico de score. | Signed tokens, WAF/CDN, rate limit, anti-hotlink, no source maps, anti-cheat avanzado. |
 
 ## Flujo vertical validable
 
@@ -41,22 +44,21 @@ Aun así, sigue siendo una implementación MVP mock/in-memory. No debe considera
 6. El demo build emite `ready` y recibe launch context por `postMessage`.
 7. El demo build emite `game_start` y `game_over`.
 8. El shell calcula checksum y llama `POST /api/v1/scores`.
-9. La API valida sesión/checksum/rango, calcula coins, agrega wallet transaction y actualiza leaderboard en memoria.
-10. Wallet y leaderboard muestran los cambios mientras la API siga viva.
+9. La API valida sesión/checksum/rango, calcula Bug Coins, agrega wallet transaction y actualiza leaderboard.
+10. Wallet y leaderboard muestran los cambios mientras la API esté disponible.
 
 ## Próximo corte técnico recomendado
 
-### Corte 1: backend real mínimo
+### Corte 1: cierre de rebrand productivo
 
-- Crear módulos Nest reales: `GamesModule`, `GameLaunchSessionsModule`, `ScoresModule`, `WalletModule`, `StoreModule`, `InventoryModule`, `AnalyticsModule`.
-- Añadir Prisma/PostgreSQL.
-- Crear migraciones para `users`, `games`, `game_versions`, `game_launch_sessions`, `scores`, `wallet_transactions`, `store_items`, `inventory_items`, `analytics_events`.
-- Mantener seed demo para `demo-user`.
+- Añadir favicon/OG finales y archivos PNG/WebP derivados del logo.
+- Decidir si se renombra el scope técnico `@lezgamez/*` y el salt `lezgamez-mvp` o si se mantienen por compatibilidad.
+- Revisar todos los textos legales y de cookies para WagonBug Arcade.
 
 ### Corte 2: shell productivo
 
-- Manejar timeout de iframe y error de build.
-- Implementar fullscreen real y overlay de pausa.
+- Manejar timeout de iframe y error de build con estados finales.
+- Implementar fullscreen real y overlay de pausa pulido.
 - Bloquear score submit si no hubo `game_start`.
 - Enviar solo `launchSessionId` y token firmado; evitar confiar en datos calculables por cliente.
 

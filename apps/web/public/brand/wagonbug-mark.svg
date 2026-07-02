@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">WagonBug mascot mark</title>
+  <desc id="desc">A monochrome mischievous bug mascot icon for WagonBug Arcade.</desc>
+  <rect width="256" height="256" rx="56" fill="#05070B"/>
+  <g fill="none" stroke="#F7F8FF" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M84 72C63 43 52 32 40 28" stroke-width="12"/>
+    <circle cx="36" cy="26" r="12" fill="#F7F8FF" stroke="none"/>
+    <path d="M172 72c21-29 32-40 44-44" stroke-width="12"/>
+    <circle cx="220" cy="26" r="12" fill="#F7F8FF" stroke="none"/>
+    <path d="M58 133 18 117l32 42m148-26 40-16-32 42" stroke-width="10"/>
+    <path d="M42 129h-25m197 0h25M51 146H28m177 0h23" stroke-width="6"/>
+  </g>
+  <circle cx="128" cy="128" r="62" fill="#F7F8FF"/>
+  <circle cx="128" cy="128" r="54" fill="#05070B"/>
+  <path d="M86 112c16 1 28 10 35 26-23 0-35-8-35-26Zm84 0c-16 1-28 10-35 26 23 0 35-8 35-26Z" fill="#F7F8FF"/>
+  <path d="M103 164c20 12 38 12 55 0" fill="none" stroke="#F7F8FF" stroke-width="7" stroke-linecap="round"/>
+  <path d="M156 160 175 173l-18 9Z" fill="#F7F8FF"/>
+</svg>

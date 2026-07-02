@@ -1,6 +1,8 @@
-# LEZGAMEZ
+# WagonBug Arcade
 
-Monorepo base para la plataforma LEZGAMEZ: web en Next.js, API en NestJS, catálogo compartido, tokens/componentes UI y contrato de Game SDK.
+Monorepo base para la plataforma **WagonBug Arcade**: web en Next.js, API en NestJS, catálogo compartido, tokens/componentes UI y contrato de Game SDK.
+
+> Nota técnica: el scope interno de paquetes sigue siendo `@lezgamez/*` para evitar un rename estructural grande del monorepo en este corte. El branding público queda rebrandeado a WagonBug Arcade.
 
 ## Estado actual honesto
 
@@ -9,8 +11,9 @@ Esta rama avanza el scaffold hacia un MVP ejecutable, pero todavía no reemplaza
 - ✅ Plataforma navegable con rutas SEO, catálogo, play shell, wallet, store, inventory, leaderboards, legal y admin mínimo.
 - ✅ Game Shell funcional: crea launch session, valida adblock antes de iniciar, carga iframe después de Play, envía contexto SDK y acepta eventos por `postMessage`.
 - ✅ Demo build same-origin para probar `/play/:slug` sin subir todavía bundles reales por juego.
-- ✅ API mock con launch sessions, score submit validado por checksum básico, leaderboard, wallet ledger mutable, store purchase e inventory.
-- ⚠️ Pendiente para producción: auth, PostgreSQL/Prisma, Redis/rate limit, módulos Nest reales, anti-cheat fuerte, ads reales, analytics dashboard y admin protegido.
+- ✅ API mock/persistente MVP con launch sessions, score submit validado por checksum básico, leaderboard, wallet ledger, store purchase e inventory.
+- ✅ Branding visual actualizado a WagonBug Arcade con paleta morado/lima/cyan y assets SVG base en `apps/web/public/brand`.
+- ⚠️ Pendiente para producción: auth final, anti-cheat fuerte, ads reales, analytics dashboard, pagos si se aprueban y admin completo.
 
 ## Requisitos previos
 
@@ -36,7 +39,7 @@ Antes de iniciar los servidores, instala o confirma estas herramientas:
 - `apps/web`: aplicación web de Next.js.
 - `apps/api`: API de NestJS.
 - `packages/catalog`: datos y modelos compartidos del catálogo de juegos.
-- `packages/ui`: tokens visuales y componentes compartidos.
+- `packages/ui`: componentes compartidos.
 - `packages/sdk`: contrato compartido del Game SDK.
 - `docs/mvp-implementation-status.md`: estado real contra el master plan y próximos cortes.
 
@@ -75,7 +78,7 @@ http://localhost:3000
 
 Rutas útiles de la web:
 
-- `http://localhost:3000/`: home de LEZGAMEZ.
+- `http://localhost:3000/`: home de WagonBug Arcade.
 - `http://localhost:3000/games`: catálogo de juegos.
 - `http://localhost:3000/play/golden-rain-zombies`: Game Shell con demo build y score submit validado.
 - `http://localhost:3000/wallet`: ledger leído desde API.
@@ -96,7 +99,7 @@ curl http://localhost:4000/api/v1/health
 Respuesta esperada:
 
 ```json
-{"ok":true,"service":"lezgamez-api"}
+{"ok":true,"service":"wagonbug-api"}
 ```
 
 Endpoints útiles para desarrollo:
@@ -119,7 +122,7 @@ curl -X POST http://localhost:4000/api/v1/launch-sessions \
   -d '{"userId":"demo-user","gameSlug":"golden-rain-zombies","deviceType":"desktop","adblockStatus":"clear"}'
 ```
 
-> El score submit requiere el `launchSessionId` generado y un checksum `base64url("${launchSessionId}:${score}:lezgamez-mvp")`. El Game Shell ya lo calcula automáticamente.
+> El score submit requiere el `launchSessionId` generado y un checksum `base64url("${launchSessionId}:${score}:lezgamez-mvp")`. El Game Shell ya lo calcula automáticamente. El salt queda igual por compatibilidad técnica en este corte.
 
 ### Paso 5: Cambiar el puerto de la API si hace falta
 
@@ -136,8 +139,6 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:4001/api pnpm --filter @lezgamez/web d
 ```
 
 ### Paso 6: Iniciar solo un servidor específico
-
-Si no quieres levantar todo el monorepo, puedes ejecutar cada app por separado.
 
 Solo web:
 
@@ -159,6 +160,14 @@ pnpm --filter @lezgamez/api dev
 - `pnpm typecheck`: valida TypeScript en todos los workspaces.
 - `pnpm --filter @lezgamez/web build`: compila solo la web.
 - `pnpm --filter @lezgamez/api build`: compila solo la API.
+
+## Branding WagonBug
+
+- Nombre público: **WagonBug Arcade**.
+- Tagline: **Weird games. Rolling chaos.**
+- Paleta principal: fondo oscuro `#05070B`, morado `#8B2CFF`, lima `#A7FF00`, cyan `#00E5FF` y warm accent `#F0B72F`.
+- Moneda visible: **Bug Coins** (`BC`).
+- Assets base: `apps/web/public/brand/wagonbug-logo.svg` y `apps/web/public/brand/wagonbug-mark.svg`.
 
 ## Solución de problemas
 
@@ -198,15 +207,15 @@ pnpm build
 ## MVP scope cubierto en esta etapa
 
 - Rutas SEO, páginas de detalle de juegos y Game Shell `/play/:slug` funcional con demo build.
-- Sistema visual premium oscuro usando tokens maestros.
+- Sistema visual oscuro actualizado a WagonBug Arcade.
 - Catálogo con 10 juegos live y 4 entradas beta/coming soon.
-- Disclaimers de wallet/store: Lez Coins son créditos internos únicamente.
-- API mock con contratos de launch sessions, score validation, wallet, store, inventory, rewards, analytics y leaderboards.
+- Disclaimers de wallet/store: Bug Coins son créditos internos únicamente.
+- API MVP con contratos de launch sessions, score validation, wallet, store, inventory, rewards, analytics y leaderboards.
 
 ## Siguiente corte recomendado
 
-1. Separar la API en módulos Nest reales.
-2. Añadir Prisma/PostgreSQL y migraciones MVP.
-3. Reemplazar demo build por bundles reales por juego.
-4. Proteger `/admin` con AuthModule/AdminModule.
-5. Añadir anti-cheat/rate limit y analytics persistentes.
+1. Separar cualquier remanente técnico de `lezgamez` si se decide renombrar scopes de paquetes y salts.
+2. Reemplazar demo builds por bundles reales por juego.
+3. Proteger y completar `/admin` con flujos finales.
+4. Añadir anti-cheat/rate limit y analytics productivos.
+5. Conectar ads reales y reporting de revenue.

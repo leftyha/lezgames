@@ -166,7 +166,7 @@ export function GameShell({ game, recommended }: GameShellProps) {
     setBugSubmitted(false);
 
     if (adConsent === 'unknown') {
-      setError('Choose an ads consent option before starting. Ads keep LezGamez free.');
+      setError('Choose an ads consent option before starting. Ads keep WagonBug Arcade free.');
       return;
     }
 
@@ -235,7 +235,7 @@ export function GameShell({ game, recommended }: GameShellProps) {
       setPersonalBest(payload.bestScore?.bestScore ?? null);
       setState('game_over');
       setShowInterstitial(adsEnabled && game.adRules.interstitialEveryDeaths > 0);
-      pushEvent(`score_accepted:+${payload.coinsEarned}LC`);
+      pushEvent(`score_accepted:+${payload.coinsEarned}BC`);
       await fetchPostGameData();
       await postAnalytics('game_over', { score, reason, coinsEarned: payload.coinsEarned });
     } catch (cause) {
@@ -296,7 +296,7 @@ export function GameShell({ game, recommended }: GameShellProps) {
           {adConsent === 'unknown' && (
             <section className="consent-panel">
               <b>Ads consent</b>
-              <p className="muted">Ads keep LezGamez free. Choose before Play. Personalized ads load only after consent.</p>
+              <p className="muted">Ads keep WagonBug Arcade free. Choose before Play. Personalized ads load only after consent.</p>
               <div className="shell-actions compact">
                 <button className="btn" type="button" onClick={() => setConsent('accepted')}>Accept ads</button>
                 <button className="btn dark" type="button" onClick={() => setConsent('declined')}>Decline personalized ads</button>
@@ -311,7 +311,7 @@ export function GameShell({ game, recommended }: GameShellProps) {
               <div className="shell-overlay">
                 <p className="mono">STATE · {state}</p>
                 <h2>{state === 'blocked' ? 'Adblock detected' : 'Ready to launch'}</h2>
-                <p className="muted">{state === 'blocked' ? 'LezGamez is free because ads keep the games online. Please disable your adblocker to play.' : 'The game build will not download until Play creates a valid launch session.'}</p>
+                <p className="muted">{state === 'blocked' ? 'WagonBug Arcade is free because ads keep the games online. Please disable your adblocker to play.' : 'The game build will not download until Play creates a valid launch session.'}</p>
                 {error && <p className="shell-error">{error}</p>}
                 <div className="shell-actions">
                   <button className="btn" type="button" onClick={start} disabled={state === 'checking_adblock' || state === 'launching'}>Play</button>
@@ -347,8 +347,8 @@ export function GameShell({ game, recommended }: GameShellProps) {
           <div className="row"><b className="mono">Adblock</b><span>{adblockResult?.status ?? 'not checked'}</span><span>{adblockResult?.blocked ? '🚫' : adblockResult ? '✅' : '—'}</span></div>
           {adblockResult && <div className="adblock-diagnostics"><p className="muted">Bait hidden: {adblockResult.baitHidden ? 'yes' : 'no'}</p>{adblockResult.providerProbeResults.map((probe) => <p className="mono" key={`${probe.name}-${probe.src}`}>{probe.name}: {probe.status}</p>)}{adblockResult.reasons.length > 0 && <p className="muted">Reasons: {adblockResult.reasons.join(', ')}</p>}</div>}
           <div className="row"><b className="mono">Best</b><span>Personal</span><b className="mono">{personalBest ?? '—'}</b></div>
-          <div className="row"><b className="mono">Base</b><span>Reward</span><b className="mono">{game.rewardRules.baseCoins} LC</b></div>
-          <div className="row"><b className="mono">Cap</b><span>Daily</span><b className="mono">{game.rewardRules.dailyCap} LC</b></div>
+          <div className="row"><b className="mono">Base</b><span>Reward</span><b className="mono">{game.rewardRules.baseCoins} BC</b></div>
+          <div className="row"><b className="mono">Cap</b><span>Daily</span><b className="mono">{game.rewardRules.dailyCap} BC</b></div>
 
           {scoreResult && <div className="postgame-card"><h2>Post-game validated</h2><div className="stat-grid"><span><b className="mono">{scoreResult.score.score}</b><small>Final score</small></span><span><b className="mono">+{scoreResult.coinsEarned}</b><small>Coins earned</small></span><span><b className="mono">{scoreResult.wallet.balance}</b><small>Wallet</small></span></div><button className="btn warm" type="button" onClick={() => setShowRewardAd(true)} disabled={!adsEnabled}>Watch reward ad</button>{showRewardAd && <AdPlacement placement="reward" enabled={adsEnabled} onServed={() => postAdEvent('completed', 'reward')} onFailed={() => postAdEvent('failed', 'reward')} />}</div>}
 

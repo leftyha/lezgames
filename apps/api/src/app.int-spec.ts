@@ -38,7 +38,7 @@ describe('App integration', () => {
     expect(store.body.items.length).toBeGreaterThan(0);
 
     const wallet = await request(app.getHttpServer()).get('/api/v1/wallet/demo-user').expect(200);
-    expect(wallet.body.currency).toBe('LC');
+    expect(wallet.body.currency).toBe('BC');
 
     const inventory = await request(app.getHttpServer()).get('/api/v1/inventory/demo-user').expect(200);
     expect(Array.isArray(inventory.body.owned)).toBe(true);
