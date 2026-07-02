@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const storeItems = [
   { id: 'item_violet_umbrella', name: 'Violet Umbrella', category: StoreCategory.skins, price: 250, compatibleGames: ['golden-rain-zombies', 'zombie-umbrella-run'], featured: true },
   { id: 'item_zombie_egg', name: 'Zombie Egg Skin', category: StoreCategory.skins, price: 500, compatibleGames: ['huevo-no-te-quiebres', 'egg-catch-me', 'egg-vs-moon'], featured: false },
-  { id: 'item_amber_rain', name: 'Amber Rain Trail', category: StoreCategory.trails, price: 750, compatibleGames: ['gravity-dungeon-dash', 'cell-front-lite'], featured: true },
+  { id: 'item_lime_rain', name: 'Lime Rain Trail', category: StoreCategory.trails, price: 750, compatibleGames: ['gravity-dungeon-dash', 'cell-front-lite'], featured: true },
   { id: 'item_glitch_frame', name: 'Glitch Frame', category: StoreCategory.frames, price: 1000, compatibleGames: ['break-me', 'glitch-maze-beta'], featured: false },
 ];
 
@@ -90,7 +90,7 @@ async function seedQuest() {
   const existing = await prisma.quest.findFirst({ where: { title, cadence: QuestCadence.daily } });
   const data = {
     title,
-    description: 'Play three LezGamez runs to validate the daily quest loop.',
+    description: 'Play three WagonBug Arcade runs to validate the daily quest loop.',
     cadence: QuestCadence.daily,
     status: QuestStatus.active,
     targetEvent: 'game_start',
@@ -120,7 +120,7 @@ async function seedDemoUser() {
     create: { userId: user.id, role: AdminRole.super_admin, active: true },
   });
 
-  await prisma.wallet.upsert({ where: { userId: user.id }, update: { currency: 'LC' }, create: { userId: user.id, currency: 'LC' } });
+  await prisma.wallet.upsert({ where: { userId: user.id }, update: { currency: 'BC' }, create: { userId: user.id, currency: 'BC' } });
 
   const seedTransactions = [
     { auditId: 'audit_wallet_001', type: WalletTransactionType.reward, amount: 450, reason: 'valid_score_reward', source: 'scores/game_1/session_demo_001' },
@@ -139,9 +139,9 @@ async function seedDemoUser() {
   });
 
   await prisma.inventoryItem.upsert({
-    where: { userId_storeItemId: { userId: user.id, storeItemId: 'item_amber_rain' } },
+    where: { userId_storeItemId: { userId: user.id, storeItemId: 'item_lime_rain' } },
     update: { equippedFor: [] },
-    create: { userId: user.id, storeItemId: 'item_amber_rain', equippedFor: [] },
+    create: { userId: user.id, storeItemId: 'item_lime_rain', equippedFor: [] },
   });
 
   const capDate = startOfUtcDay();
@@ -166,7 +166,7 @@ async function main() {
   await seedStore();
   await seedQuest();
   await seedDemoUser();
-  console.log('Seeded persistent LezGamez MVP data idempotently.');
+  console.log('Seeded persistent WagonBug Arcade MVP data idempotently.');
 }
 
 main()
