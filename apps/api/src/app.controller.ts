@@ -4,7 +4,7 @@ import { Controller, Get } from '@nestjs/common';
 export class AppController {
   @Get('health')
   health() {
-    return { ok: true, service: 'lezgamez-api', persistence: 'postgresql-prisma', runtime: ['redis-rate-limit', 'session-auth', 'role-guards'], architecture: 'modular-nest-domains' };
+    return { ok: true, service: 'wagonbug-api', persistence: 'postgresql-prisma', runtime: ['redis-rate-limit', 'session-auth', 'role-guards'], architecture: 'modular-nest-domains' };
   }
 
   @Get('modules')
